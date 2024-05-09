@@ -1,6 +1,8 @@
 import 'package:admin/constants.dart';
+import 'package:admin/controllers/loginController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,8 +14,22 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _hidePassword = true;
   bool _isLoading = false;
-  final TextEditingController telController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final LoginController loginController = Get.put(LoginController());
+
+  void _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final name = nameController.text;
+    final password = passwordController.text;
+    await loginController.login(name, password);
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text('data'),
               const SizedBox(
                 height: 200,
               ),
@@ -39,10 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20.0),
               // phone number
               TextField(
-                controller: telController,
-                keyboardType: TextInputType.phone,
+                controller: nameController,
+                keyboardType: TextInputType.name,
                 decoration: InputDecoration(
-                  labelText: 'ເບີໂທລະສັບ',
+                  labelText: 'ຊື່ຜູ້ໃຊ້',
                   labelStyle: const TextStyle(
                     color: fontColorDefualt,
                     fontSize: 18,
@@ -61,12 +76,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     horizontal: 10.0,
                     vertical: 20.0,
                   ),
-                  prefixText: '+856 ',
-                  prefixStyle: const TextStyle(
-                    color: fontColorDefualt,
-                  ),
                   prefixIcon: const Icon(
-                    Icons.phone,
+                    Icons.person,
                     color: Colors.grey,
                   ),
                   focusColor: Colors.black87,
@@ -122,8 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                       icon: _hidePassword
-                          ? const Icon(Icons.visibility_off)
-                          : const Icon(Icons.visibility),
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
                       color: Colors.grey,
                     ),
                   ),
@@ -148,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 50.0,
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     shape: RoundedRectangleBorder(
