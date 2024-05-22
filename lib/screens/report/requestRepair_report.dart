@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:admin/controllers/deleteRequestRepairController.dart';
 import 'package:admin/controllers/getRequestRepairController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_data_table/web_data_table.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class RequestRepariReport extends StatefulWidget {
   const RequestRepariReport({Key? key}) : super(key: key);
@@ -20,9 +22,14 @@ class _RequestRepariReportState extends State<RequestRepariReport> {
   int? _latestTick;
   List<String> _selectedRowKeys = [];
   int _rowsPerPage = 10;
+  late TextEditingController _dateRangeController;
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   final GetRequestRepairController _getRequestRepairController =
       Get.put(GetRequestRepairController());
+  final DeleteRequestRepairController deleteRequestRepairController =
+      Get.put(DeleteRequestRepairController());
 
   @override
   void initState() {
@@ -33,7 +40,59 @@ class _RequestRepariReportState extends State<RequestRepariReport> {
       // Timer logic
     });
     _getRequestRepairController.fetchRequestRepairData();
+    _startDate = null;
+    _endDate = null;
+    _dateRangeController = TextEditingController(text: '');
   }
+
+  // start code filter data by date
+  String _formatDate(DateTime date) {
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
+
+  String _formatDateRange(DateTime? startDate, DateTime? endDate) {
+    String start = startDate != null ? _formatDate(startDate) : '';
+    String end = endDate != null ? _formatDate(endDate) : '';
+    return '$start - $end';
+  }
+
+  Future<void> _selectDateRange(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        _startDate = picked.start;
+        _endDate = picked.end;
+        _dateRangeController.text = _formatDateRange(_startDate, _endDate);
+      });
+    }
+  }
+
+  List<Map<String, dynamic>> getFilteredRows() {
+    if (_startDate == null && _endDate == null) {
+      return _getRequestRepairController.requestRepairData;
+    } else {
+      return _getRequestRepairController.requestRepairData.where((row) {
+        DateTime createdAt = DateTime.parse(row['createdAt']);
+        bool isInDateRange = true;
+        if (_startDate != null && _endDate != null) {
+          isInDateRange =
+              createdAt.isAfter(_startDate!) && createdAt.isBefore(_endDate!);
+        } else if (_startDate != null) {
+          isInDateRange = createdAt.isAfter(_startDate!);
+        } else if (_endDate != null) {
+          isInDateRange = createdAt.isBefore(_endDate!);
+        }
+
+        return isInDateRange;
+      }).toList();
+    }
+  }
+
+  // end code filter data by date
 
   @override
   void dispose() {
@@ -42,13 +101,49 @@ class _RequestRepariReportState extends State<RequestRepariReport> {
     _timer = null;
   }
 
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, Function onConfirm) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap a button
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('ຢືນຢັນການລືບລາຍການຂອງທ່ານ'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('ທ່ານຕ້ອງການລືບລາຍການທີ່ທ່ານເລືອກໄວ້ນີ້ແທ້ບໍ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('ຍົກເລີກ'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('ຕົກລົງ'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                onConfirm(); // Call the delete function
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
         if (_getRequestRepairController.requestRepairData.isEmpty) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else {
+          List<Map<String, dynamic>> filteredRows = getFilteredRows();
           return SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.all(8.0),
@@ -61,44 +156,77 @@ class _RequestRepariReportState extends State<RequestRepariReport> {
                       width: 100,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.red, // Background color
+                          backgroundColor: Colors.red,
                         ),
+                        onPressed: _selectedRowKeys.isNotEmpty
+                            ? () {
+                                _showDeleteConfirmationDialog(context, () {
+                                  deleteRequestRepairController
+                                      .deleteCustomer(_selectedRowKeys);
+                                  //print('Delete! $_selectedRowKeys');
+                                  setState(() {
+                                    _selectedRowKeys.clear();
+                                  });
+                                });
+                              }
+                            : null,
                         child: const Text(
                           'Delete',
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
-                        onPressed: () {
-                          print('Delete!');
-                          setState(() {
-                            _selectedRowKeys.clear();
-                          });
-                        },
                       ),
                     ),
                   Container(
-                    width: 300,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        hintText: 'increment search...',
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCCCCCC),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 300,
+                          child: TextFormField(
+                            controller: _dateRangeController,
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              labelText: 'ວັນທີ່ເລີ່ມ - ວັນທີ່ຈົບ',
+                              labelStyle: const TextStyle(
+                                fontSize: 18,
+                                fontFamily: 'phetsarath_ot',
+                                fontWeight: FontWeight.w500,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6.0),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.calendar_month_outlined),
+                                onPressed: () => _selectDateRange(context),
+                              ),
+                            ),
                           ),
                         ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCCCCCC),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          height: 50,
+                          width: 100,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              // Change button color as needed
+                            ),
+                            onPressed: () {},
+                            child: const Row(
+                              children: [
+                                Icon(Icons.print),
+                                SizedBox(width: 10),
+                                Text('ພິມ'),
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
-                      onChanged: (text) {
-                        _filterTexts = text.trim().split(' ');
-                        _willSearch = false;
-                        _latestTick = _timer?.tick;
-                      },
+                        )
+                      ],
                     ),
                   ),
                 ],
@@ -153,7 +281,7 @@ class _RequestRepariReportState extends State<RequestRepariReport> {
                       dataCell: (value) => DataCell(Text('$value')),
                     ),
                   ],
-                  rows: _getRequestRepairController.requestRepairData,
+                  rows: filteredRows,
                   selectedRowKeys: _selectedRowKeys,
                   onTapRow: (rows, index) {
                     print('onTapRow(): index = $index, row = ${rows[index]}');

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 class GetRepairshopController extends GetxController {
   var repairshopData = <Map<String, dynamic>>[].obs;
+  var filteredRepairshopData = <Map<String, dynamic>>[].obs; // Add this line
 
   @override
   void onInit() {
@@ -19,6 +20,8 @@ class GetRepairshopController extends GetxController {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         repairshopData.value = List<Map<String, dynamic>>.from(responseData);
+        filteredRepairshopData
+            .assignAll(repairshopData); // Initialize filtered data
         print('Successfully fetched repair data $repairshopData');
       } else {
         // Error handling
@@ -28,5 +31,13 @@ class GetRepairshopController extends GetxController {
       // Error handling
       print("Error fetching repair data: $e");
     }
+  }
+
+  void filterDataByDateRange(DateTime startDate, DateTime endDate) {
+    var filteredData = repairshopData.where((repairshop) {
+      var createdAt = DateTime.parse(repairshop['createdAt']);
+      return createdAt.isAfter(startDate) && createdAt.isBefore(endDate);
+    }).toList();
+    filteredRepairshopData.assignAll(filteredData);
   }
 }
