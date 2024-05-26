@@ -1,24 +1,21 @@
 import 'dart:async';
-import 'package:admin/controllers/deleteTowingshopController.dart';
-import 'package:admin/controllers/getTowingshopController.dart';
+import 'package:admin/constants.dart';
+import 'package:admin/controllers/deleteCustomerController.dart';
+import 'package:admin/controllers/member/customerController.dart';
+import 'package:admin/controllers/member/repairshopController.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web_data_table/web_data_table.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-import 'dart:typed_data';
-import 'package:flutter/services.dart';
 
-class TowingshopReport extends StatefulWidget {
-  const TowingshopReport({Key? key}) : super(key: key);
+class Repairshop extends StatefulWidget {
+  const Repairshop({Key? key}) : super(key: key);
 
   @override
-  State<TowingshopReport> createState() => _TowingshopReportState();
+  State<Repairshop> createState() => _RepairshopState();
 }
 
-class _TowingshopReportState extends State<TowingshopReport> {
+class _RepairshopState extends State<Repairshop> {
   late String _sortColumnName;
   late bool _sortAscending;
   List<String>? _filterTexts;
@@ -27,14 +24,11 @@ class _TowingshopReportState extends State<TowingshopReport> {
   int? _latestTick;
   List<String> _selectedRowKeys = [];
   int _rowsPerPage = 10;
-  late TextEditingController _dateRangeController;
-  DateTime? _startDate;
-  DateTime? _endDate;
 
-  final GetTowingshopController _getTowingshopController =
-      Get.put(GetTowingshopController());
-  final DeleteTowingshopController deleteTowingshopController =
-      Get.put(DeleteTowingshopController());
+  final RepairshopController _repairshopController =
+      Get.put(RepairshopController());
+  final DeleteCustomerController deleteCustomerController =
+      Get.put(DeleteCustomerController());
 
   @override
   void initState() {
@@ -44,60 +38,8 @@ class _TowingshopReportState extends State<TowingshopReport> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       // Timer logic
     });
-    _getTowingshopController.fetchTowingshopData();
-    _startDate = null;
-    _endDate = null;
-    _dateRangeController = TextEditingController(text: '');
+    _repairshopController.fetchRepairshopData();
   }
-
-  // start code filter data by date
-  String _formatDate(DateTime date) {
-    return DateFormat('dd/MM/yyyy').format(date);
-  }
-
-  String _formatDateRange(DateTime? startDate, DateTime? endDate) {
-    String start = startDate != null ? _formatDate(startDate) : '';
-    String end = endDate != null ? _formatDate(endDate) : '';
-    return '$start - $end';
-  }
-
-  Future<void> _selectDateRange(BuildContext context) async {
-    final DateTimeRange? picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null) {
-      setState(() {
-        _startDate = picked.start;
-        _endDate = picked.end;
-        _dateRangeController.text = _formatDateRange(_startDate, _endDate);
-      });
-    }
-  }
-
-  List<Map<String, dynamic>> getFilteredRows() {
-    if (_startDate == null && _endDate == null) {
-      return _getTowingshopController.towingshopData;
-    } else {
-      return _getTowingshopController.towingshopData.where((row) {
-        DateTime createdAt = DateTime.parse(row['createdAt']);
-        bool isInDateRange = true;
-        if (_startDate != null && _endDate != null) {
-          isInDateRange =
-              createdAt.isAfter(_startDate!) && createdAt.isBefore(_endDate!);
-        } else if (_startDate != null) {
-          isInDateRange = createdAt.isAfter(_startDate!);
-        } else if (_endDate != null) {
-          isInDateRange = createdAt.isBefore(_endDate!);
-        }
-
-        return isInDateRange;
-      }).toList();
-    }
-  }
-
-  // end code filter data by date
 
   @override
   void dispose() {
@@ -141,88 +83,20 @@ class _TowingshopReportState extends State<TowingshopReport> {
     );
   }
 
-  // printing
-  Future<void> _printDataTable() async {
-    List<Map<String, dynamic>> rows = getFilteredRows();
-    // Load the font
-    final ByteData fontData =
-        await rootBundle.load('assets/fonts/phetsarath_ot.ttf');
-    final Uint8List fontBytes = fontData.buffer.asUint8List();
-    final ttf = pw.Font.ttf(fontBytes.buffer.asByteData());
-    final pdf = pw.Document();
-    final headers = [
-      'ID',
-      'ຊື່ຮ້ານສ້ອມແປງ',
-      'ຊື່ເຈົ້າຂອງຮ້ານ',
-      'ເບີໂທ',
-      'ອາຍຸ',
-      'ເພດ',
-      'ວັນເດືອນປີເກີດ',
-      'ບ້ານ',
-      'ເມືອງ',
-      'ແຂວງ',
-      'ປະເພດໃຫ້ບໍລິການ',
-    ];
-    final data = rows.map((row) {
-      return [
-        row['id'],
-        row['shop_name'],
-        row['manager_name'],
-        row['tel'],
-        row['age'],
-        row['gender'],
-        row['birthdate'],
-        row['village'],
-        row['district'],
-        row['province'],
-        row['type_service'],
-      ];
-    }).toList();
-
-    pdf.addPage(pw.Page(
-      pageFormat: PdfPageFormat.a4.landscape,
-      build: (pw.Context context) {
-        return pw.Table.fromTextArray(
-          headers: headers,
-          data: data,
-          border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
-          headerStyle: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
-          cellStyle: pw.TextStyle(font: ttf),
-          headerDecoration: const pw.BoxDecoration(
-            color: PdfColors.grey300,
-          ),
-          cellHeight: 30,
-          cellAlignments: {
-            for (var i = 0; i < headers.length; i++) i: pw.Alignment.centerLeft,
-          },
-          cellPadding: const pw.EdgeInsets.all(4),
-          oddRowDecoration: const pw.BoxDecoration(
-            color: PdfColors.grey100,
-          ),
-        );
-      },
-    ));
-
-    await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async => pdf.save(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        if (_getTowingshopController.towingshopData.isEmpty) {
+        if (_repairshopController.repairshopData.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         } else {
-          List<Map<String, dynamic>> filteredRows = getFilteredRows();
           return SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.all(8.0),
               child: WebDataTable(
-                header: const Text('ລາຍງານຈຳນວນຮ້ານແກ່ລົດ'),
+                header: const Text('ຈັດການຂໍ້ມູນຮ້ານສ້ອມແປງ'),
                 actions: [
-                  if (_selectedRowKeys.isNotEmpty)
+                  if (_selectedRowKeys.isNotEmpty) ...[
                     SizedBox(
                       height: 50,
                       width: 100,
@@ -230,75 +104,66 @@ class _TowingshopReportState extends State<TowingshopReport> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
-                        onPressed: _selectedRowKeys.isNotEmpty
-                            ? () {
-                                _showDeleteConfirmationDialog(context, () {
-                                  deleteTowingshopController
-                                      .deleteTowingshop(_selectedRowKeys);
-                                  //print('Delete! $_selectedRowKeys');
-                                  setState(() {
-                                    _selectedRowKeys.clear();
-                                  });
-                                });
-                              }
-                            : null,
+                        onPressed: () {
+                          _showDeleteConfirmationDialog(context, () {
+                            deleteCustomerController
+                                .deleteCustomer(_selectedRowKeys);
+                            setState(() {
+                              _selectedRowKeys.clear();
+                            });
+                          });
+                        },
                         child: const Text(
-                          'Delete',
+                          'ລຶບຂໍ້ມູນ',
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                  Container(
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 300,
-                          child: TextFormField(
-                            controller: _dateRangeController,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              labelText: 'ວັນທີ່ເລີ່ມ - ວັນທີ່ຈົບ',
-                              labelStyle: const TextStyle(
-                                fontSize: 18,
-                                fontFamily: 'phetsarath_ot',
-                                fontWeight: FontWeight.w500,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.calendar_month_outlined),
-                                onPressed: () => _selectDateRange(context),
-                              ),
-                            ),
+                    const SizedBox(width: 8), // Add space between buttons
+                    SizedBox(
+                      height: 50,
+                      width: 100,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                        ),
+                        onPressed: () {
+                          // Add your update logic here
+                        },
+                        child: const Text(
+                          'ແກ້ໄຂຂໍ້ມູນ',
+                          style: TextStyle(
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          height: 50,
-                          width: 100,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              // Change button color as needed
-                            ),
-                            onPressed: _printDataTable,
-                            child: const Row(
-                              children: [
-                                Icon(Icons.print),
-                                SizedBox(width: 10),
-                                Text('ພິມ'),
-                              ],
-                            ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 300, // specify a finite width
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        hintText: 'ຄົ້ນຫາ...',
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFFCCCCCC),
                           ),
-                        )
-                      ],
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFFCCCCCC),
+                          ),
+                        ),
+                      ),
+                      onChanged: (text) {
+                        _filterTexts = text.trim().split(' ');
+                        _willSearch = false;
+                        _latestTick = _timer?.tick;
+                      },
                     ),
                   ),
                 ],
@@ -393,7 +258,7 @@ class _TowingshopReportState extends State<TowingshopReport> {
                       dataCell: (value) => DataCell(Text('$value')),
                     ),
                   ],
-                  rows: filteredRows,
+                  rows: _repairshopController.repairshopData,
                   selectedRowKeys: _selectedRowKeys,
                   onTapRow: (rows, index) {
                     print('onTapRow(): index = $index, row = ${rows[index]}');

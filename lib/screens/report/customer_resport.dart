@@ -1,10 +1,15 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:admin/controllers/deleteCustomerController.dart';
 import 'package:admin/controllers/getCustomerController.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web_data_table/web_data_table.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class CustomerReport extends StatefulWidget {
   const CustomerReport({Key? key}) : super(key: key);
@@ -138,6 +143,76 @@ class _CustomerReportState extends State<CustomerReport> {
     );
   }
 
+  // printing
+  Future<void> _printDataTable() async {
+    List<Map<String, dynamic>> rows = getFilteredRows();
+    // Load the font
+    final ByteData fontData =
+        await rootBundle.load('assets/fonts/phetsarath_ot.ttf');
+    final Uint8List fontBytes = fontData.buffer.asUint8List();
+    final ttf = pw.Font.ttf(fontBytes.buffer.asByteData());
+    final pdf = pw.Document();
+    final headers = [
+      'ID',
+      'ຊື່ຜູ້ໃຊ້',
+      'ນາມສະກຸນ',
+      'ເບີໂທ',
+      'ອາຍຸ',
+      'ເພດ',
+      'ວັນເດືອນປີເກີດ',
+      'ບ້ານ',
+      'ເມືອງ',
+      'ແຂວງ',
+      'role',
+      'createAt',
+      'updateAt'
+    ];
+    final data = rows.map((row) {
+      return [
+        row['id'],
+        row['first_name'],
+        row['last_name'],
+        row['tel'],
+        row['age'],
+        row['gender'],
+        row['birthdate'],
+        row['village'],
+        row['district'],
+        row['province'],
+        row['role'],
+        row['createdAt'],
+        row['updatedAt']
+      ];
+    }).toList();
+
+    pdf.addPage(pw.Page(
+      pageFormat: PdfPageFormat.a4.landscape,
+      build: (pw.Context context) {
+        return pw.Table.fromTextArray(
+          headers: headers,
+          data: data,
+          border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+          headerStyle: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
+          cellStyle: pw.TextStyle(font: ttf),
+          headerDecoration: const pw.BoxDecoration(
+            color: PdfColors.grey300,
+          ),
+          cellHeight: 30,
+          cellAlignments: {
+            for (var i = 0; i < headers.length; i++) i: pw.Alignment.centerLeft,
+          },
+          cellPadding: const pw.EdgeInsets.all(4),
+          oddRowDecoration: const pw.BoxDecoration(
+            color: PdfColors.grey100,
+          ),
+        );
+      },
+    ));
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -206,6 +281,7 @@ class _CustomerReportState extends State<CustomerReport> {
                           ),
                         ),
                         const SizedBox(width: 10),
+                        // printing button
                         SizedBox(
                           height: 50,
                           width: 100,
@@ -218,7 +294,7 @@ class _CustomerReportState extends State<CustomerReport> {
                               ),
                               // Change button color as needed
                             ),
-                            onPressed: () {},
+                            onPressed: _printDataTable,
                             child: const Row(
                               children: [
                                 Icon(Icons.print),

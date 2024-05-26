@@ -1,3 +1,4 @@
+import 'package:admin/controllers/MenuAppController.dart';
 import 'package:admin/models/MyFiles.dart';
 import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
@@ -22,33 +23,76 @@ class MyFiles extends StatelessWidget {
               "",
               style: TextStyle(color: fontColorDefualt),
             ),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical:
-                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+            PopupMenuButton(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: ListTile(
+                    leading: const Icon(Icons.person_add),
+                    title: const Text('ເພີ່ມລູກຄ້າ'),
+                    onTap: () {
+                      MenuAppController.instance
+                          .changeSelectedItem(MenuItems.addCustomer);
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ),
-              ),
-              onPressed: () {},
-              icon: const Icon(Icons.add),
-              label: const Text(
-                "ເພີ່ມສະມາຊິກ",
+                PopupMenuItem(
+                  child: ListTile(
+                    leading: const Icon(Icons.home_repair_service),
+                    title: const Text('ເພີ່ມຮ້ານສ້ອມແປງ'),
+                    onTap: () {
+                      MenuAppController.instance
+                          .changeSelectedItem(MenuItems.addRepairshop);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+                PopupMenuItem(
+                  child: ListTile(
+                    leading: const Icon(Icons.directions_car),
+                    title: const Text('ເພີ່ມຮ້ານແກ່ລົດ'),
+                    onTap: () {
+                      MenuAppController.instance
+                          .changeSelectedItem(MenuItems.addTowingshop);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ],
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.all(10),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'ເພີ່ມສະມາຊິກ',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
         const SizedBox(height: defaultPadding),
-        Responsive(
-          mobile: FileInfoCardGridView(
-            crossAxisCount: _size.width < 650 ? 2 : 4,
-            childAspectRatio: _size.width < 650 && _size.width > 350 ? 1.3 : 1,
-          ),
-          tablet: const FileInfoCardGridView(),
-          desktop: FileInfoCardGridView(
-            childAspectRatio: _size.width < 1400 ? 1.1 : 1.4,
-          ),
-        ),
+        // Responsive(
+        //   mobile: FileInfoCardGridView(
+        //     crossAxisCount: _size.width < 650 ? 2 : 4,
+        //     childAspectRatio: _size.width < 650 && _size.width > 350 ? 1.3 : 1,
+        //   ),
+        //   tablet: const FileInfoCardGridView(),
+        //   desktop: FileInfoCardGridView(
+        //     childAspectRatio: _size.width < 1400 ? 1.1 : 1.4,
+        //   ),
+        // ),
       ],
     );
   }

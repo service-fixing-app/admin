@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:admin/controllers/deleteRepairshopController.dart';
-import 'package:admin/controllers/getRepairshopController.dart';
+import 'package:admin/controllers/getScoreRapairshopController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_data_table/web_data_table.dart';
 import 'package:get/get.dart';
@@ -11,14 +11,14 @@ import 'package:printing/printing.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 
-class RepairshopReport extends StatefulWidget {
-  const RepairshopReport({Key? key}) : super(key: key);
+class RepairshopScoreReport extends StatefulWidget {
+  const RepairshopScoreReport({Key? key}) : super(key: key);
 
   @override
-  State<RepairshopReport> createState() => _RepairshopReportState();
+  State<RepairshopScoreReport> createState() => _RepairshopScoreReportState();
 }
 
-class _RepairshopReportState extends State<RepairshopReport> {
+class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
   late String _sortColumnName;
   late bool _sortAscending;
   List<String>? _filterTexts;
@@ -31,8 +31,8 @@ class _RepairshopReportState extends State<RepairshopReport> {
   DateTime? _startDate;
   DateTime? _endDate;
 
-  final GetRepairshopController _repairshopController =
-      Get.put(GetRepairshopController());
+  final GetScoreRepairshopController _repairshopScoreController =
+      Get.put(GetScoreRepairshopController());
   final DeleteRepairshopController deleteRepairshopController =
       Get.put(DeleteRepairshopController());
 
@@ -44,7 +44,7 @@ class _RepairshopReportState extends State<RepairshopReport> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       // Timer logic
     });
-    _repairshopController.fetchRepairshopData();
+    _repairshopScoreController.fetchScoreRepairshopData();
     _startDate = null;
     _endDate = null;
     _dateRangeController = TextEditingController(text: '');
@@ -78,9 +78,9 @@ class _RepairshopReportState extends State<RepairshopReport> {
 
   List<Map<String, dynamic>> getFilteredRows() {
     if (_startDate == null && _endDate == null) {
-      return _repairshopController.repairshopData;
+      return _repairshopScoreController.repairScoreData;
     } else {
-      return _repairshopController.repairshopData.where((row) {
+      return _repairshopScoreController.repairScoreData.where((row) {
         DateTime createdAt = DateTime.parse(row['createdAt']);
         bool isInDateRange = true;
         if (_startDate != null && _endDate != null) {
@@ -154,38 +154,18 @@ class _RepairshopReportState extends State<RepairshopReport> {
     final headers = [
       'ID',
       'ຊື່ຮ້ານສ້ອມແປງ',
-      'ຊື່ເຈົ້າຂອງຮ້ານ',
-      'ເບີໂທ',
-      'ອາຍຸ',
-      'ເພດ',
-      'ວັນເດືອນປີເກີດ',
-      'ບ້ານ',
-      'ເມືອງ',
-      'ແຂວງ',
-      'ປະເພດໃຫ້ບໍລິການ',
-      'createAt',
-      'updateAt'
+      'ຄະແນນ',
     ];
     final data = rows.map((row) {
       return [
-        row['id'],
+        row['shop_id'],
         row['shop_name'],
-        row['manager_name'],
-        row['tel'],
-        row['age'],
-        row['gender'],
-        row['birthdate'],
-        row['village'],
-        row['district'],
-        row['province'],
-        row['type_service'],
-        row['createdAt'],
-        row['updatedAt']
+        row['average'],
       ];
     }).toList();
 
     pdf.addPage(pw.Page(
-      pageFormat: PdfPageFormat.a4.landscape,
+      // pageFormat: PdfPageFormat.a4.landscape,
       build: (pw.Context context) {
         return pw.Table.fromTextArray(
           headers: headers,
@@ -217,7 +197,7 @@ class _RepairshopReportState extends State<RepairshopReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        if (_repairshopController.repairshopData.isEmpty) {
+        if (_repairshopScoreController.repairScoreData.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         } else {
           List<Map<String, dynamic>> filteredRows = getFilteredRows();
@@ -306,27 +286,6 @@ class _RepairshopReportState extends State<RepairshopReport> {
                                 ),
                               ),
                             )
-                            // TextField(
-                            //   decoration: const InputDecoration(
-                            //     prefixIcon: Icon(Icons.search),
-                            //     hintText: 'ຄົ້ນຫາ...',
-                            //     focusedBorder: OutlineInputBorder(
-                            //       borderSide: BorderSide(
-                            //         color: Color(0xFFCCCCCC),
-                            //       ),
-                            //     ),
-                            //     border: OutlineInputBorder(
-                            //       borderSide: BorderSide(
-                            //         color: Color(0xFFCCCCCC),
-                            //       ),
-                            //     ),
-                            //   ),
-                            //   onChanged: (text) {
-                            //     _filterTexts = text.trim().split(' ');
-                            //     _willSearch = false;
-                            //     _latestTick = _timer?.tick;
-                            //   },
-                            // ),
                           ],
                         ),
                       ),
@@ -337,89 +296,35 @@ class _RepairshopReportState extends State<RepairshopReport> {
                       filterTexts: _filterTexts,
                       columns: [
                         WebDataColumn(
-                          name: 'id',
+                          name: 'shop_id',
                           label: const Text('ID'),
-                          dataCell: (value) => DataCell(Text('$value')),
+                          dataCell: (value) => DataCell(
+                            SizedBox(
+                              width: 100,
+                              child: Text('$value'),
+                            ),
+                          ),
                         ),
+        
                         WebDataColumn(
                           name: 'shop_name',
                           label: const Text('ຊື່ຮ້ານສ້ອມແປງ'),
-                          dataCell: (value) => DataCell(Text('$value')),
+                          dataCell: (value) => DataCell(
+                            SizedBox(
+                              width: 200,
+                              child: Text('$value'),
+                            ),
+                          ),
                         ),
                         WebDataColumn(
-                          name: 'manager_name',
-                          label: const Text('ຊື່ເຈົ້າຂອງຮ້ານ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'tel',
-                          label: const Text('ເບີໂທ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'password',
-                          label: const Text('ລະຫັດຜ່ານ'),
-                          dataCell: (value) => const DataCell(Text('********')),
-                        ),
-                        WebDataColumn(
-                          name: 'age',
-                          label: const Text('ອາຍຸ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'gender',
-                          label: const Text('ເພດ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'birthdate',
-                          label: const Text('ວັນເດືອນປີເກີດ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'village',
-                          label: const Text('ບ້ານ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'district',
-                          label: const Text('ເມືອງ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'province',
-                          label: const Text('ແຂວງ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'type_service',
-                          label: const Text('ປະເພດໃຫ້ບໍລິການ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'profile_image',
-                          label: const Text('ຮູບ profile'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'document_verify',
-                          label: const Text('ຮູບເອກະສານຢືນຢັນຕົວຕົນ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'role',
-                          label: const Text('role'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'createdAt',
-                          label: const Text('createAt'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'updatedAt',
-                          label: const Text('updateAt'),
-                          dataCell: (value) => DataCell(Text('$value')),
+                          name: 'average',
+                          label: const Text('Grade'),
+                          dataCell: (value) => DataCell(
+                            SizedBox(
+                              width: 200,
+                              child: Text('$value'),
+                            ),
+                          ),
                         ),
                       ],
                       rows: filteredRows,

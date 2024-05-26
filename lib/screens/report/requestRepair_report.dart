@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_data_table/web_data_table.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 
 class RequestRepariReport extends StatefulWidget {
   const RequestRepariReport({Key? key}) : super(key: key);
@@ -136,6 +141,69 @@ class _RequestRepariReportState extends State<RequestRepariReport> {
     );
   }
 
+  // printing
+  Future<void> _printDataTable() async {
+    List<Map<String, dynamic>> rows = getFilteredRows();
+    // Load the font
+    final ByteData fontData =
+        await rootBundle.load('assets/fonts/phetsarath_ot.ttf');
+    final Uint8List fontBytes = fontData.buffer.asUint8List();
+    final ttf = pw.Font.ttf(fontBytes.buffer.asByteData());
+    final pdf = pw.Document();
+    final headers = [
+      'ID',
+      'sender_name',
+      'sender_tel',
+      'receiver_name',
+      'receiver_tel',
+      'message',
+      'status',
+      'createAt',
+      'updateAt'
+    ];
+    final data = rows.map((row) {
+      return [
+        row['id'],
+        row['sender_name'],
+        row['sender_tel'],
+        row['receiver_name'],
+        row['receiver_tel'],
+        row['message'],
+        row['status'],
+        row['createdAt'],
+        row['updatedAt']
+      ];
+    }).toList();
+
+    pdf.addPage(pw.Page(
+      pageFormat: PdfPageFormat.a4.landscape,
+      build: (pw.Context context) {
+        return pw.Table.fromTextArray(
+          headers: headers,
+          data: data,
+          border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+          headerStyle: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
+          cellStyle: pw.TextStyle(font: ttf),
+          headerDecoration: const pw.BoxDecoration(
+            color: PdfColors.grey300,
+          ),
+          cellHeight: 30,
+          cellAlignments: {
+            for (var i = 0; i < headers.length; i++) i: pw.Alignment.centerLeft,
+          },
+          cellPadding: const pw.EdgeInsets.all(4),
+          oddRowDecoration: const pw.BoxDecoration(
+            color: PdfColors.grey100,
+          ),
+        );
+      },
+    ));
+
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,7 +284,7 @@ class _RequestRepariReportState extends State<RequestRepariReport> {
                               ),
                               // Change button color as needed
                             ),
-                            onPressed: () {},
+                            onPressed: _printDataTable,
                             child: const Row(
                               children: [
                                 Icon(Icons.print),
