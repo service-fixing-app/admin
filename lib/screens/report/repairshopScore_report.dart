@@ -210,85 +210,86 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
                     header: const Text('ລາຍງານຈຳນວນຮ້ານສ້ອມແປງລົດ'),
                     actions: [
                       if (_selectedRowKeys.isNotEmpty)
-                        SizedBox(
-                          height: 50,
-                          width: 100,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                            onPressed: _selectedRowKeys.isNotEmpty
-                                ? () {
-                                    _showDeleteConfirmationDialog(context, () {
-                                      deleteRepairshopController
-                                          .deleteRepairshop(_selectedRowKeys);
-                                      //print('Delete! $_selectedRowKeys');
-                                      setState(() {
-                                        _selectedRowKeys.clear();
-                                      });
-                                    });
-                                  }
-                                : null,
-                            child: const Text(
-                              'Delete',
-                              style: TextStyle(
-                                color: Colors.white,
+                        // SizedBox(
+                        //   height: 50,
+                        //   width: 100,
+                        //   child: ElevatedButton(
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: Colors.red,
+                        //     ),
+                        //     onPressed: _selectedRowKeys.isNotEmpty
+                        //         ? () {
+                        //             _showDeleteConfirmationDialog(context, () {
+                        //               deleteRepairshopController
+                        //                   .deleteRepairshop(_selectedRowKeys);
+                        //               //print('Delete! $_selectedRowKeys');
+                        //               setState(() {
+                        //                 _selectedRowKeys.clear();
+                        //               });
+                        //             });
+                        //           }
+                        //         : null,
+                        //     child: const Text(
+                        //       'Delete',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        Container(
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 300,
+                                child: TextFormField(
+                                  controller: _dateRangeController,
+                                  readOnly: true,
+                                  decoration: InputDecoration(
+                                    labelText: 'ວັນທີ່ເລີ່ມ - ວັນທີ່ຈົບ',
+                                    labelStyle: const TextStyle(
+                                      fontSize: 18,
+                                      fontFamily: 'phetsarath_ot',
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: const Icon(
+                                          Icons.calendar_month_outlined),
+                                      onPressed: () =>
+                                          _selectDateRange(context),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 10),
+                              SizedBox(
+                                height: 50,
+                                width: 100,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    // Change button color as needed
+                                  ),
+                                  onPressed: _printDataTable,
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.print),
+                                      SizedBox(width: 10),
+                                      Text('ພິມ'),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
-                      Container(
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 300,
-                              child: TextFormField(
-                                controller: _dateRangeController,
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                  labelText: 'ວັນທີ່ເລີ່ມ - ວັນທີ່ຈົບ',
-                                  labelStyle: const TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'phetsarath_ot',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(6.0),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    icon: const Icon(
-                                        Icons.calendar_month_outlined),
-                                    onPressed: () => _selectDateRange(context),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            SizedBox(
-                              height: 50,
-                              width: 100,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  // Change button color as needed
-                                ),
-                                onPressed: _printDataTable,
-                                child: const Row(
-                                  children: [
-                                    Icon(Icons.print),
-                                    SizedBox(width: 10),
-                                    Text('ພິມ'),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                     ],
                     source: WebDataTableSource(
                       sortColumnName: _sortColumnName,
@@ -305,7 +306,6 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
                             ),
                           ),
                         ),
-        
                         WebDataColumn(
                           name: 'shop_name',
                           label: const Text('ຊື່ຮ້ານສ້ອມແປງ'),

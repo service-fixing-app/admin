@@ -1,11 +1,10 @@
-import 'dart:js';
-
-import 'package:admin/constants.dart';
+import 'package:admin/controllers/updatecustomerController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:admin/constants.dart';
 import 'package:admin/controllers/member/customerController.dart';
 import 'package:admin/controllers/deleteCustomerController.dart';
-import 'package:intl/intl.dart';
 
 class Customer extends StatefulWidget {
   const Customer({Key? key}) : super(key: key);
@@ -16,18 +15,12 @@ class Customer extends StatefulWidget {
 
 class _CustomerState extends State<Customer> {
   final CustomerController _customerController = Get.put(CustomerController());
-
-  late CustomerDataSource _dataSource;
   static int _rowsPerPage = 10;
 
   @override
   void initState() {
     super.initState();
-    _customerController.fetchCustomer().then((_) {
-      setState(() {
-        _dataSource = CustomerDataSource(_customerController.customer);
-      });
-    });
+    _customerController.fetchCustomer();
   }
 
   @override
@@ -41,10 +34,6 @@ class _CustomerState extends State<Customer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // const Text(
-          //   "ຕາຕະລາງຮ້ານສ້ອມແປງທີ່ມີຄະແນນສູງສຸດ",
-          //   style: TextStyle(color: fontColorDefualt),
-          // ),
           SizedBox(
             width: double.infinity,
             child: Obx(() {
@@ -52,7 +41,6 @@ class _CustomerState extends State<Customer> {
                 return const Center(child: CircularProgressIndicator());
               }
               return PaginatedDataTable(
-                arrowHeadColor: Colors.blue,
                 header: const Text(
                   "ລາຍຊື່ລູກຄ້າ",
                   style: TextStyle(color: fontColorDefualt),
@@ -134,7 +122,7 @@ class _CustomerState extends State<Customer> {
                               color: fontColorDefualt,
                               fontWeight: FontWeight.bold))),
                 ],
-                source: _dataSource,
+                source: CustomerDataSource(_customerController.customer),
                 rowsPerPage: _rowsPerPage,
                 availableRowsPerPage: const [5, 10, 20],
                 onRowsPerPageChanged: (rowsPerPage) {
@@ -158,7 +146,7 @@ class CustomerDataSource extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
-    if (index >= customerData.length) return null;
+    if (index >= customerData.length || index < 0) return null;
     final customer = customerData[index];
     return customerDataRow(customer);
   }
@@ -174,12 +162,6 @@ class CustomerDataSource extends DataTableSource {
 }
 
 DataRow customerDataRow(Map<String, dynamic> customer) {
-  final DateFormat formatter = DateFormat('dd-MM-yyyy');
-  final String formattedBirthdate =
-      formatter.format(DateTime.parse(customer['birthdate'].toString()));
-  final DeleteCustomerController deleteCustomerController =
-      Get.put(DeleteCustomerController());
-
   return DataRow(
     cells: [
       DataCell(
@@ -187,7 +169,7 @@ DataRow customerDataRow(Map<String, dynamic> customer) {
           children: [
             CircleAvatar(
               backgroundImage:
-                  NetworkImage(customer['profile_image'].toString()),
+                  NetworkImage(customer['profile_image']!.toString()),
             ),
           ],
         ),
@@ -198,11 +180,10 @@ DataRow customerDataRow(Map<String, dynamic> customer) {
       DataCell(Text(customer['tel'].toString())),
       DataCell(Text(customer['age'].toString())),
       DataCell(Text(customer['gender'].toString())),
-      DataCell(Text(formattedBirthdate)),
+      DataCell(Text(customer['birthdate'].toString())),
       DataCell(Text(customer['village'].toString())),
       DataCell(Text(customer['district'].toString())),
       DataCell(Text(customer['province'].toString())),
-      // DataCell(Text(customer['profile_image'].toString())),
       DataCell(Text(customer['role'].toString())),
       DataCell(Text(customer['createdAt'].toString())),
       DataCell(Text(customer['updatedAt'].toString())),
@@ -217,12 +198,14 @@ DataRow customerDataRow(Map<String, dynamic> customer) {
                 },
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.blue),
-              onPressed: () {
-                // Implement the update logic as needed
-              },
-            ),
+            Builder(builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.edit, color: Colors.blue),
+                onPressed: () {
+                  _showUpdateCustomerDialog(context, customer);
+                },
+              );
+            }),
           ],
         ),
       ),
@@ -234,6 +217,7 @@ Future<void> _showDeleteConfirmationDialog(
     BuildContext context, String customerId) async {
   final DeleteCustomerController deleteCustomerController =
       Get.put(DeleteCustomerController());
+
   return showDialog<void>(
     context: context,
     barrierDismissible: false, // User must tap a button
@@ -259,6 +243,115 @@ Future<void> _showDeleteConfirmationDialog(
             onPressed: () async {
               Navigator.of(context).pop();
               await deleteCustomerController.deleteCustomer(customerId);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _showUpdateCustomerDialog(
+    BuildContext context, Map<String, dynamic> customer) {
+  final TextEditingController firstNameController =
+      TextEditingController(text: customer['first_name'].toString());
+  final TextEditingController lastNameController =
+      TextEditingController(text: customer['last_name'].toString());
+  final TextEditingController telController =
+      TextEditingController(text: customer['tel'].toString());
+  final TextEditingController ageController =
+      TextEditingController(text: customer['age'].toString());
+  final TextEditingController genderController =
+      TextEditingController(text: customer['gender'].toString());
+  final TextEditingController villageController =
+      TextEditingController(text: customer['village'].toString());
+  final TextEditingController districtController =
+      TextEditingController(text: customer['district'].toString());
+  final TextEditingController provinceController =
+      TextEditingController(text: customer['province'].toString());
+  final TextEditingController roleController =
+      TextEditingController(text: customer['role'].toString());
+
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // User must tap a button
+
+    builder: (BuildContext context) {
+      final UpdateCustomerController updateCustomerController =
+          Get.put(UpdateCustomerController());
+      return AlertDialog(
+        title: const Text('Update Customer'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              TextField(
+                controller: firstNameController,
+                decoration: const InputDecoration(labelText: 'First Name'),
+              ),
+              TextField(
+                controller: lastNameController,
+                decoration: const InputDecoration(labelText: 'Last Name'),
+              ),
+              TextField(
+                controller: telController,
+                decoration: const InputDecoration(labelText: 'Telephone'),
+              ),
+              TextField(
+                controller: ageController,
+                decoration: const InputDecoration(labelText: 'Age'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: genderController,
+                decoration: const InputDecoration(labelText: 'Gender'),
+              ),
+              TextField(
+                controller: villageController,
+                decoration: const InputDecoration(labelText: 'Village'),
+              ),
+              TextField(
+                controller: districtController,
+                decoration: const InputDecoration(labelText: 'District'),
+              ),
+              TextField(
+                controller: provinceController,
+                decoration: const InputDecoration(labelText: 'Province'),
+              ),
+              TextField(
+                controller: roleController,
+                decoration: const InputDecoration(labelText: 'Role'),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('Update'),
+            onPressed: () async {
+              try {
+                // Update the customer data
+                customer['first_name'] = firstNameController.text;
+                customer['last_name'] = lastNameController.text;
+                customer['tel'] = telController.text;
+                customer['age'] = int.tryParse(ageController.text) ?? 0;
+                customer['gender'] = genderController.text;
+                customer['village'] = villageController.text;
+                customer['district'] = districtController.text;
+                customer['province'] = provinceController.text;
+                customer['role'] = roleController.text;
+
+                Navigator.of(context).pop();
+                await updateCustomerController.updateCustomer(customer);
+              } catch (e) {
+                // Handle errors
+                print('Error updating customer: $e');
+              }
             },
           ),
         ],

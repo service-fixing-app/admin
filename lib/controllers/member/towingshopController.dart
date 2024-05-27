@@ -19,6 +19,13 @@ class TowingshopController extends GetxController {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         towingshopData.value = List<Map<String, dynamic>>.from(responseData);
+        for (var entry in responseData) {
+          String birthdateString = entry['birthdate'];
+          List<String> parts = birthdateString.split('/');
+          String reformattedDateString =
+              '${parts[2]}-${parts[0].padLeft(2, '0')}-${parts[1].padLeft(2, '0')}';
+          entry['birthdate'] = DateTime.parse(reformattedDateString);
+        }
         print('Successfully fetched repair data $towingshopData');
       } else {
         // Error handling

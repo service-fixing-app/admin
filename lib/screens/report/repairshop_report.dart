@@ -230,33 +230,33 @@ class _RepairshopReportState extends State<RepairshopReport> {
                     header: const Text('ລາຍງານຈຳນວນຮ້ານສ້ອມແປງລົດ'),
                     actions: [
                       if (_selectedRowKeys.isNotEmpty)
-                        SizedBox(
-                          height: 50,
-                          width: 100,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                            onPressed: _selectedRowKeys.isNotEmpty
-                                ? () {
-                                    _showDeleteConfirmationDialog(context, () {
-                                      deleteRepairshopController
-                                          .deleteRepairshop(_selectedRowKeys);
-                                      //print('Delete! $_selectedRowKeys');
-                                      setState(() {
-                                        _selectedRowKeys.clear();
-                                      });
-                                    });
-                                  }
-                                : null,
-                            child: const Text(
-                              'Delete',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 50,
+                        //   width: 100,
+                        //   child: ElevatedButton(
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: Colors.red,
+                        //     ),
+                        //     onPressed: _selectedRowKeys.isNotEmpty
+                        //         ? () {
+                        //             _showDeleteConfirmationDialog(context, () {
+                        //               deleteRepairshopController
+                        //                   .deleteRepairshop(_selectedRowKeys);
+                        //               //print('Delete! $_selectedRowKeys');
+                        //               setState(() {
+                        //                 _selectedRowKeys.clear();
+                        //               });
+                        //             });
+                        //           }
+                        //         : null,
+                        //     child: const Text(
+                        //       'Delete',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       Container(
                         child: Row(
                           children: [

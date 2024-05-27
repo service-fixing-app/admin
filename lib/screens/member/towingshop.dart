@@ -1,12 +1,11 @@
-import 'dart:async';
+import 'package:admin/controllers/deleteTowingshopController.dart';
+import 'package:admin/controllers/member/towingshopController.dart';
+import 'package:admin/controllers/updatecustomerController.dart';
+import 'package:admin/controllers/updatetowingshopController.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:admin/constants.dart';
 import 'package:admin/controllers/deleteCustomerController.dart';
-import 'package:admin/controllers/member/customerController.dart';
-import 'package:admin/controllers/member/towingshopController.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_web_data_table/web_data_table.dart';
-import 'package:get/get.dart';
 
 class Towingshop extends StatefulWidget {
   const Towingshop({Key? key}) : super(key: key);
@@ -16,288 +15,389 @@ class Towingshop extends StatefulWidget {
 }
 
 class _TowingshopState extends State<Towingshop> {
-  late String _sortColumnName;
-  late bool _sortAscending;
-  List<String>? _filterTexts;
-  bool _willSearch = true;
-  Timer? _timer;
-  int? _latestTick;
-  List<String> _selectedRowKeys = [];
-  int _rowsPerPage = 10;
-
   final TowingshopController _towingshopController =
       Get.put(TowingshopController());
-  final DeleteCustomerController deleteCustomerController =
-      Get.put(DeleteCustomerController());
+  static int _rowsPerPage = 10;
 
   @override
   void initState() {
     super.initState();
-    _sortColumnName = 'id';
-    _sortAscending = true;
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      // Timer logic
-    });
     _towingshopController.fetchTowingshopData();
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _timer?.cancel();
-    _timer = null;
-  }
-
-  Future<void> _showDeleteConfirmationDialog(
-      BuildContext context, Function onConfirm) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // User must tap a button
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('ຢືນຢັນການລືບລາຍການຂອງທ່ານ'),
-          content: const SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('ທ່ານຕ້ອງການລືບລາຍການທີ່ທ່ານເລືອກໄວ້ນີ້ແທ້ບໍ?'),
-              ],
-            ),
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(defaultPadding),
+      decoration: const BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: Obx(() {
+              if (_towingshopController.towingshopData.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return PaginatedDataTable(
+                header: const Text(
+                  "ຂໍ້ມູນຮ້ານແກ່ລົດ",
+                  style: TextStyle(color: fontColorDefualt),
+                ),
+                columns: const [
+                  DataColumn(
+                      label: Text("ຮູບprofile",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ID",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ຊື່ຮ້ານສ້ອມແປງ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ຊື່ເຈົ້າຂອງຮ້ານ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ເບີໂທ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ອາຍຸ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ເພດ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ວັນທີ່ເດືອນປີເກີດ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ບ້ານ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ເມືອງ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ແຂວງ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ປະເພດໃຫ້ບໍລິການ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("latitude",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("longitude",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("ບົດບາດ",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("createdAt",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("updatedAt",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                  DataColumn(
+                      label: Text("Actions",
+                          style: TextStyle(
+                              color: fontColorDefualt,
+                              fontWeight: FontWeight.bold))),
+                ],
+                source:
+                    TowingshopDataSource(_towingshopController.towingshopData),
+                rowsPerPage: _rowsPerPage,
+                availableRowsPerPage: const [5, 10, 20],
+                onRowsPerPageChanged: (rowsPerPage) {
+                  setState(() {
+                    _rowsPerPage = rowsPerPage!;
+                  });
+                },
+              );
+            }),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('ຍົກເລີກ'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: const Text('ຕົກລົງ'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                onConfirm(); // Call the delete function
-              },
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
+  }
+}
+
+class TowingshopDataSource extends DataTableSource {
+  final List<Map<String, dynamic>> towingshopData;
+
+  TowingshopDataSource(this.towingshopData);
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= towingshopData.length) return null;
+    final customer = towingshopData[index];
+    return customerDataRow(customer);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(() {
-        if (_towingshopController.towingshopData.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          return SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              child: WebDataTable(
-                header: const Text('ຈັດການຂໍ້ມູນຮ້ານແກ່ລົດ'),
-                actions: [
-                  if (_selectedRowKeys.isNotEmpty) ...[
-                    SizedBox(
-                      height: 50,
-                      width: 100,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        onPressed: () {
-                          _showDeleteConfirmationDialog(context, () {
-                            deleteCustomerController
-                                .deleteCustomer(_selectedRowKeys);
-                            setState(() {
-                              _selectedRowKeys.clear();
-                            });
-                          });
-                        },
-                        child: const Text(
-                          'ລຶບຂໍ້ມູນ',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8), // Add space between buttons
-                    SizedBox(
-                      height: 50,
-                      width: 100,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                        ),
-                        onPressed: () {
-                          // Add your update logic here
-                        },
-                        child: const Text(
-                          'ແກ້ໄຂຂໍ້ມູນ',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 300, // specify a finite width
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        hintText: 'ຄົ້ນຫາ...',
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCCCCCC),
-                          ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCCCCCC),
-                          ),
-                        ),
-                      ),
-                      onChanged: (text) {
-                        _filterTexts = text.trim().split(' ');
-                        _willSearch = false;
-                        _latestTick = _timer?.tick;
-                      },
-                    ),
-                  ),
-                ],
-                source: WebDataTableSource(
-                  sortColumnName: _sortColumnName,
-                  sortAscending: _sortAscending,
-                  filterTexts: _filterTexts,
-                  columns: [
-                    WebDataColumn(
-                      name: 'id',
-                      label: const Text('ID'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'shop_name',
-                      label: const Text('ຊື່ຮ້ານສ້ອມແປງ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'manager_name',
-                      label: const Text('ຊື່ເຈົ້າຂອງຮ້ານ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'tel',
-                      label: const Text('ເບີໂທ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'password',
-                      label: const Text('ລະຫັດຜ່ານ'),
-                      dataCell: (value) => const DataCell(Text('********')),
-                    ),
-                    WebDataColumn(
-                      name: 'age',
-                      label: const Text('ອາຍຸ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'gender',
-                      label: const Text('ເພດ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'birthdate',
-                      label: const Text('ວັນເດືອນປີເກີດ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'village',
-                      label: const Text('ບ້ານ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'district',
-                      label: const Text('ເມືອງ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'province',
-                      label: const Text('ແຂວງ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'type_service',
-                      label: const Text('ປະເພດໃຫ້ບໍລິການ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'profile_image',
-                      label: const Text('ຮູບ profile'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'document_verify',
-                      label: const Text('ຮູບເອກະສານຢືນຢັນຕົວຕົນ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'role',
-                      label: const Text('role'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'createdAt',
-                      label: const Text('createAt'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'updatedAt',
-                      label: const Text('updateAt'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                  ],
-                  rows: _towingshopController.towingshopData,
-                  selectedRowKeys: _selectedRowKeys,
-                  onTapRow: (rows, index) {
-                    print('onTapRow(): index = $index, row = ${rows[index]}');
-                  },
-                  onSelectRows: (keys) {
-                    print(
-                        'onSelectRows(): count = ${keys.length} keys = $keys');
-                    setState(() {
-                      _selectedRowKeys = keys;
-                    });
-                  },
-                  primaryKeyName: 'id',
-                ),
-                horizontalMargin: 100,
-                onPageChanged: (offset) {
-                  print('onPageChanged(): offset = $offset');
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => towingshopData.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+DataRow customerDataRow(Map<String, dynamic> towingshop) {
+  return DataRow(
+    cells: [
+      DataCell(
+        Row(
+          children: [
+            CircleAvatar(
+              backgroundImage:
+                  NetworkImage(towingshop['profile_image']!.toString()),
+            ),
+          ],
+        ),
+      ),
+      DataCell(Text(towingshop['id'].toString())),
+      DataCell(Text(towingshop['shop_name'].toString())),
+      DataCell(Text(towingshop['manager_name'].toString())),
+      DataCell(Text(towingshop['tel'].toString())),
+      DataCell(Text(towingshop['age'].toString())),
+      DataCell(Text(towingshop['gender'].toString())),
+      DataCell(Text(towingshop['birthdate'].toString())),
+      DataCell(Text(towingshop['village'].toString())),
+      DataCell(Text(towingshop['district'].toString())),
+      DataCell(Text(towingshop['province'].toString())),
+      DataCell(Text(towingshop['type_service'].toString())),
+      DataCell(Text(towingshop['latitude'].toString())),
+      DataCell(Text(towingshop['longitude'].toString())),
+      DataCell(Text(towingshop['role'].toString())),
+      DataCell(Text(towingshop['createdAt'].toString())),
+      DataCell(Text(towingshop['updatedAt'].toString())),
+      DataCell(
+        Row(
+          children: [
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  _showDeleteConfirmationDialog(context, towingshop['id']);
                 },
-                onSort: (columnName, ascending) {
-                  print(
-                      'onSort(): columnName = $columnName, ascending = $ascending');
-                  setState(() {
-                    _sortColumnName = columnName;
-                    _sortAscending = ascending;
-                  });
-                },
-                onRowsPerPageChanged: (rowsPerPage) {
-                  print('onRowsPerPageChanged(): rowsPerPage = $rowsPerPage');
-                  setState(() {
-                    if (rowsPerPage != null) {
-                      _rowsPerPage = rowsPerPage;
-                    }
-                  });
-                },
-                rowsPerPage: _rowsPerPage,
               ),
             ),
-          );
-        }
-      }),
-    );
-  }
+            Builder(builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.edit, color: Colors.blue),
+                onPressed: () {
+                  _showUpdateTowingshopDialog(context, towingshop);
+                },
+              );
+            }),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+Future<void> _showDeleteConfirmationDialog(
+    BuildContext context, String towingshopId) async {
+  final DeleteTowingshopController deleteTowingshopController =
+      Get.put(DeleteTowingshopController());
+
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirm Delete'),
+        content: const SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Are you sure you want to delete this customer?'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('Delete'),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await deleteTowingshopController.deleteTowingshop(towingshopId);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _showUpdateTowingshopDialog(
+    BuildContext context, Map<String, dynamic> towingshop) {
+  final TextEditingController shopNameController =
+      TextEditingController(text: towingshop['shop_name'].toString());
+  final TextEditingController managerNameController =
+      TextEditingController(text: towingshop['manager_name'].toString());
+  final TextEditingController telController =
+      TextEditingController(text: towingshop['tel'].toString());
+  final TextEditingController ageController =
+      TextEditingController(text: towingshop['age'].toString());
+  final TextEditingController genderController =
+      TextEditingController(text: towingshop['gender'].toString());
+  final TextEditingController villageController =
+      TextEditingController(text: towingshop['village'].toString());
+  final TextEditingController districtController =
+      TextEditingController(text: towingshop['district'].toString());
+  final TextEditingController provinceController =
+      TextEditingController(text: towingshop['province'].toString());
+  final TextEditingController typeServiceController =
+      TextEditingController(text: towingshop['type_service'].toString());
+  final TextEditingController latitudeController =
+      TextEditingController(text: towingshop['latitude'].toString());
+  final TextEditingController longitudeController =
+      TextEditingController(text: towingshop['longitude'].toString());
+  final TextEditingController roleController =
+      TextEditingController(text: towingshop['role'].toString());
+
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      final UpdateTowingshopController updateTowingshopController =
+          Get.put(UpdateTowingshopController());
+      return AlertDialog(
+        title: const Text('Update Customer'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              TextField(
+                controller: shopNameController,
+                decoration: const InputDecoration(labelText: 'Shop Name'),
+              ),
+              TextField(
+                controller: managerNameController,
+                decoration: const InputDecoration(labelText: 'Manager Name'),
+              ),
+              TextField(
+                controller: telController,
+                decoration: const InputDecoration(labelText: 'Telephone'),
+              ),
+              TextField(
+                controller: ageController,
+                decoration: const InputDecoration(labelText: 'Age'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: genderController,
+                decoration: const InputDecoration(labelText: 'Gender'),
+              ),
+              TextField(
+                controller: villageController,
+                decoration: const InputDecoration(labelText: 'Village'),
+              ),
+              TextField(
+                controller: districtController,
+                decoration: const InputDecoration(labelText: 'District'),
+              ),
+              TextField(
+                controller: provinceController,
+                decoration: const InputDecoration(labelText: 'Province'),
+              ),
+              TextField(
+                controller: typeServiceController,
+                decoration: const InputDecoration(labelText: 'TypeService'),
+              ),
+              TextField(
+                controller: latitudeController,
+                decoration: const InputDecoration(labelText: 'Latitude'),
+              ),
+              TextField(
+                controller: longitudeController,
+                decoration: const InputDecoration(labelText: 'Longitude'),
+              ),
+              TextField(
+                controller: roleController,
+                decoration: const InputDecoration(labelText: 'Role'),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('Update'),
+            onPressed: () async {
+              try {
+                // Update the customer data
+                towingshop['shop_name'] = shopNameController.text;
+                towingshop['manager_name'] = managerNameController.text;
+                towingshop['tel'] = telController.text;
+                towingshop['age'] = int.tryParse(ageController.text) ?? 0;
+                towingshop['gender'] = genderController.text;
+                towingshop['village'] = villageController.text;
+                towingshop['district'] = districtController.text;
+                towingshop['province'] = provinceController.text;
+                towingshop['type_service'] = typeServiceController.text;
+                towingshop['latitude'] = latitudeController.text;
+                towingshop['longitude'] = longitudeController.text;
+                towingshop['role'] = roleController.text;
+
+                Navigator.of(context).pop();
+                // Dispatch an event to update the customer using GetX
+                await updateTowingshopController.updateTowingshop(towingshop);
+              } catch (e) {
+                // Handle errors
+                print('Error updating customer: $e');
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

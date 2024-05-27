@@ -19,21 +19,14 @@ class CustomerController extends GetxController {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         customer.value = List<Map<String, dynamic>>.from(responseData);
-        for (var entry in responseData) {
-          String birthdateString = entry['birthdate'];
-          List<String> parts = birthdateString.split('/');
-          String reformattedDateString =
-              '${parts[2]}-${parts[0].padLeft(2, '0')}-${parts[1].padLeft(2, '0')}';
-          entry['birthdate'] = DateTime.parse(reformattedDateString);
-        }
-        print('Successfully fetched repair data $customer');
+        print('Successfully fetched  customer data $customer');
       } else {
         // Error handling
-        print("Failed to fetch repair data: ${response.statusCode}");
+        print("Failed to fetch customer data: ${response.statusCode}");
       }
     } catch (e) {
       // Error handling
-      print("Error fetching repair data: $e");
+      print("Error fetching customer data: $e");
     }
   }
 }

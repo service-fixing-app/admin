@@ -20,8 +20,8 @@ class RepairshopController extends GetxController {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         repairshopData.value = List<Map<String, dynamic>>.from(responseData);
-        filteredRepairshopData
-            .assignAll(repairshopData); // Initialize filtered data
+        // filteredRepairshopData
+        //     .assignAll(repairshopData); // Initialize filtered data
         print('Successfully fetched repair data $repairshopData');
       } else {
         // Error handling
