@@ -24,12 +24,53 @@ class SideMenu extends StatelessWidget {
                   .changeSelectedItem(MenuItems.dashboard);
             },
           ),
-          DrawerListTile(
-            title: "ສະມາຊິກ",
-            svgSrc: "assets/icons/menu_tran.svg",
-            press: () {
-              //
-            },
+          // DrawerListTile(
+          //   title: "ສະມາຊິກ",
+          //   svgSrc: "assets/icons/menu_tran.svg",
+          //   press: () {
+          //     //
+          //   },
+          // ),
+          ExpansionTile(
+            title: DrawerListTile(
+              title: "ສະມາຊິກ",
+              svgSrc: "assets/icons/menu_tran.svg",
+              press: () {
+                // Handle ລາຍງານ menu item press
+              },
+            ),
+            children: [
+              ListTile(
+                title: const Text(
+                  "ຈັດການຜູ້ໃຊ້",
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.customer);
+                },
+              ),
+              ListTile(
+                title: const Text(
+                  "ຈັດການຮ້ານສ້ອມແປງລົດ",
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.repairshop);
+                },
+              ),
+              ListTile(
+                title: const Text(
+                  "ຈັດການຮ້ານແກ່ລົດ",
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.towingshop);
+                },
+              ),
+            ],
           ),
           ExpansionTile(
             title: DrawerListTile(
@@ -76,7 +117,8 @@ class SideMenu extends StatelessWidget {
                   style: TextStyle(fontSize: 14),
                 ),
                 onTap: () {
-                  // Handle Towing Shop Report menu item press
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.repairshopScoreReport);
                 },
               ),
               ListTile(
@@ -85,7 +127,8 @@ class SideMenu extends StatelessWidget {
                   style: TextStyle(fontSize: 14),
                 ),
                 onTap: () {
-                  // Handle Towing Shop Report menu item press
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.towingshopScoreReport);
                 },
               ),
               ListTile(
@@ -119,10 +162,36 @@ class SideMenu extends StatelessWidget {
               ),
             ],
           ),
-          DrawerListTile(
-            title: "ແຈ້ງເຕືອນ",
-            svgSrc: "assets/icons/menu_notification.svg",
-            press: () {},
+          ExpansionTile(
+            title: DrawerListTile(
+              title: "ແຈ້ງເຕືອນ",
+              svgSrc: "assets/icons/menu_notification.svg",
+              press: () {
+                // Handle ລາຍງານ menu item press
+              },
+            ),
+            children: [
+              ListTile(
+                title: const Text(
+                  "ແຈ້ງເຕືອນສະໜັກຮ້ານສ້ອມແປງລົດໃໝ່",
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.repairshopNotification);
+                },
+              ),
+              ListTile(
+                title: const Text(
+                  "ແຈ້ງເຕືອນສະໜັກຮ້ານແກ່ລົດລົດໃໝ່",
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.towingshopNotification);
+                },
+              ),
+            ],
           ),
           DrawerListTile(
             title: "ການຕັ້ງຄ່າ",

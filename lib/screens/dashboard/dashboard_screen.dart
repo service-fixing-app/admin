@@ -1,4 +1,5 @@
 import 'package:admin/responsive.dart';
+import 'package:admin/screens/dashboard/components/line_chart.dart';
 import 'package:admin/screens/dashboard/components/my_fields.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,7 @@ class DashboardScreen extends StatelessWidget {
                       const MyFiles(),
                       const SizedBox(height: defaultPadding),
                       const RecentFiles(),
+                      // const LineChartDataShow(),
                       if (Responsive.isMobile(context))
                         const SizedBox(height: defaultPadding),
                       if (Responsive.isMobile(context)) const StorageDetails(),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "883799409029",
+    "project_id": "phone-otp-verify-cd321",
+    "storage_bucket": "phone-otp-verify-cd321.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883799409029:android:c72720f769b2bc810584ec",
+        "android_client_info": {
+          "package_name": "com.example.service_fixing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDii6Ju19E7fgESLccP7yYahpuKo4NGv_U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

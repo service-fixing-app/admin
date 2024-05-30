@@ -4,7 +4,6 @@ import 'package:admin/screens/login/login_screen.dart';
 import 'package:admin/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'constants.dart';
 
 void main() {

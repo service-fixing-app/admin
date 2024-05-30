@@ -1,4 +1,6 @@
+import 'package:admin/controllers/getAllmemberController.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../constants.dart';
 import 'chart.dart';
@@ -11,45 +13,46 @@ class StorageDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GetAllmemberController controller = Get.put(GetAllmemberController());
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
         color: secondaryColor,
-        borderRadius:  BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Storage Details",
+          const Text(
+            "ຂໍ້ມູນສະມາຊິກທັງໝົດໃນລະບົບ",
             style: TextStyle(color: fontColorDefualt),
           ),
-          SizedBox(height: defaultPadding),
-          Chart(),
-          StorageInfoCard(
-            svgSrc: "assets/icons/Documents.svg",
-            title: "Documents Files",
-            amountOfFiles: "1.3GB",
-            numOfFiles: 1328,
+          const SizedBox(height: defaultPadding),
+          const Chart(),
+          Obx(
+            () => StorageInfoCard(
+              image: "assets/images/people.png",
+              title: "ຈຳນວນລູກຄ້າທັງໝົດ",
+              amountOfFiles: controller.customerCount.value.toString(),
+              numOfFiles: 1328,
+            ),
           ),
-          StorageInfoCard(
-            svgSrc: "assets/icons/media.svg",
-            title: "Media Files",
-            amountOfFiles: "15.3GB",
-            numOfFiles: 1328,
+          Obx(
+            () => StorageInfoCard(
+              image: "assets/images/people.png",
+              title: "ຈຳນວນສະມາຊິກຮ້ານສ້ອມແປງທັງໝົດ",
+              amountOfFiles: controller.repairshopCount.value.toString(),
+              numOfFiles: 1328,
+            ),
           ),
-          StorageInfoCard(
-            svgSrc: "assets/icons/folder.svg",
-            title: "Other Files",
-            amountOfFiles: "1.3GB",
-            numOfFiles: 1328,
-          ),
-          StorageInfoCard(
-            svgSrc: "assets/icons/unknown.svg",
-            title: "Unknown",
-            amountOfFiles: "1.3GB",
-            numOfFiles: 140,
-          ),
+          Obx(
+            () => StorageInfoCard(
+              image: "assets/images/people.png",
+              title: "ຈຳນວນສະມາຊິກຮ້ານແກ່ລົດທັງໝົດ",
+              amountOfFiles: controller.towingtruckCount.value.toString(),
+              numOfFiles: 1328,
+            ),
+          )
         ],
       ),
     );

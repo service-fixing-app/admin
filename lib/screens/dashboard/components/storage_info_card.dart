@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../constants.dart';
 
@@ -7,12 +6,12 @@ class StorageInfoCard extends StatelessWidget {
   const StorageInfoCard({
     Key? key,
     required this.title,
-    required this.svgSrc,
+    required this.image,
     required this.amountOfFiles,
     required this.numOfFiles,
   }) : super(key: key);
 
-  final String title, svgSrc, amountOfFiles;
+  final String title, image, amountOfFiles;
   final int numOfFiles;
 
   @override
@@ -31,7 +30,7 @@ class StorageInfoCard extends StatelessWidget {
           SizedBox(
             height: 20,
             width: 20,
-            child: SvgPicture.asset(svgSrc),
+            child: Image.asset(image),
           ),
           Expanded(
             child: Padding(
@@ -45,15 +44,13 @@ class StorageInfoCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: fontColorDefualt),
                   ),
-                  Text(
-                    "$numOfFiles Files ",
-                    style: const TextStyle(color: fontColorDefualt),
-                  ),
                 ],
               ),
             ),
           ),
-          Text(amountOfFiles)
+          Row(
+            children: [Text(amountOfFiles), const Text('ຄົນ')],
+          )
         ],
       ),
     );
