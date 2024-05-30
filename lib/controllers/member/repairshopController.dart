@@ -19,9 +19,13 @@ class RepairshopController extends GetxController {
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        repairshopData.value = List<Map<String, dynamic>>.from(responseData);
+        // repairshopData.value = List<Map<String, dynamic>>.from(responseData);
         // filteredRepairshopData
         //     .assignAll(repairshopData); // Initialize filtered data
+        final allRepairshopData = List<Map<String, dynamic>>.from(responseData);
+        repairshopData.value = allRepairshopData
+            .where((shop) => shop['permission_status'] == "true")
+            .toList();
         print('Successfully fetched repair data $repairshopData');
       } else {
         // Error handling

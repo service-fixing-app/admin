@@ -1,26 +1,26 @@
 import 'package:admin/controllers/deleteRepairshopController.dart';
-import 'package:admin/controllers/member/repairshopController.dart';
+import 'package:admin/controllers/member/repairshopNotificationController.dart';
 import 'package:admin/controllers/updateRepairshopController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:admin/constants.dart';
 
-class Repairshop extends StatefulWidget {
-  const Repairshop({Key? key}) : super(key: key);
+class RepairshopNotification extends StatefulWidget {
+  const RepairshopNotification({Key? key}) : super(key: key);
 
   @override
-  State<Repairshop> createState() => _RepairshopState();
+  State<RepairshopNotification> createState() => _RepairshopNotificationState();
 }
 
-class _RepairshopState extends State<Repairshop> {
-  final RepairshopController _repairshopController =
-      Get.put(RepairshopController());
+class _RepairshopNotificationState extends State<RepairshopNotification> {
+  final RepairshopNotificationController _repairshopNotificationController =
+      Get.put(RepairshopNotificationController());
   static int _rowsPerPage = 10;
 
   @override
   void initState() {
     super.initState();
-    _repairshopController.fetchRepairshopData();
+    _repairshopNotificationController.fetchRepairshopData();
   }
 
   @override
@@ -37,8 +37,10 @@ class _RepairshopState extends State<Repairshop> {
           SizedBox(
             width: double.infinity,
             child: Obx(() {
-              if (_repairshopController.repairshopData.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+              if (_repairshopNotificationController.repairshopData.isEmpty) {
+                return const Center(
+                  child: Text('ຍັງບໍ່ມີຂໍ້ຄວາມໃໝ່'),
+                );
               }
               return PaginatedDataTable(
                 header: const Text(
@@ -137,8 +139,8 @@ class _RepairshopState extends State<Repairshop> {
                               color: fontColorDefualt,
                               fontWeight: FontWeight.bold))),
                 ],
-                source:
-                    RepairshopDataSource(_repairshopController.repairshopData),
+                source: RepairshopDataSource(
+                    _repairshopNotificationController.repairshopData),
                 rowsPerPage: _rowsPerPage,
                 availableRowsPerPage: const [5, 10, 20],
                 onRowsPerPageChanged: (rowsPerPage) {
@@ -178,6 +180,8 @@ class RepairshopDataSource extends DataTableSource {
 }
 
 DataRow customerDataRow(Map<String, dynamic> repairshop) {
+  final RepairshopNotificationController _repairshopNotificationController =
+      Get.put(RepairshopNotificationController());
   return DataRow(
     cells: [
       DataCell(
@@ -209,22 +213,14 @@ DataRow customerDataRow(Map<String, dynamic> repairshop) {
       DataCell(
         Row(
           children: [
-            Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  _showDeleteConfirmationDialog(context, repairshop['id']);
-                },
-              ),
+            ElevatedButton(
+              onPressed: () async {
+                //logic
+                await _repairshopNotificationController.UpdatePermission(
+                    repairshop['id']);
+              },
+              child: const Text('ອະນຸມັດເປີດຮ້ານ'),
             ),
-            Builder(builder: (context) {
-              return IconButton(
-                icon: const Icon(Icons.edit, color: Colors.blue),
-                onPressed: () {
-                  _showUpdateRepairshopDialog(context, repairshop);
-                },
-              );
-            }),
           ],
         ),
       ),

@@ -42,7 +42,7 @@ class _CustomerState extends State<Customer> {
               }
               return PaginatedDataTable(
                 header: const Text(
-                  "ລາຍຊື່ລູກຄ້າ",
+                  "ຈັດການຂໍ້ມູນລູກຄ້າ",
                   style: TextStyle(color: fontColorDefualt),
                 ),
                 columns: const [
@@ -223,23 +223,23 @@ Future<void> _showDeleteConfirmationDialog(
     barrierDismissible: false, // User must tap a button
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Confirm Delete'),
+        title: const Text('ຢືນຢັນການລຶບ'),
         content: const SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text('Are you sure you want to delete this customer?'),
+              Text('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລູກຄ້ານີ້?'),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: const Text('ຍົກເລີກ'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
             },
           ),
           TextButton(
-            child: const Text('Delete'),
+            child: const Text('ລຶບ'),
             onPressed: () async {
               Navigator.of(context).pop();
               await deleteCustomerController.deleteCustomer(customerId);
@@ -280,59 +280,59 @@ Future<void> _showUpdateCustomerDialog(
       final UpdateCustomerController updateCustomerController =
           Get.put(UpdateCustomerController());
       return AlertDialog(
-        title: const Text('Update Customer'),
+        title: const Text('ອັບເດດລູກຄ້າ'),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
               TextField(
                 controller: firstNameController,
-                decoration: const InputDecoration(labelText: 'First Name'),
+                decoration: const InputDecoration(labelText: 'ຊື່​ລູກຄ້າ'),
               ),
               TextField(
                 controller: lastNameController,
-                decoration: const InputDecoration(labelText: 'Last Name'),
+                decoration: const InputDecoration(labelText: 'ນາມ​ສະ​ກຸນ'),
               ),
               TextField(
                 controller: telController,
-                decoration: const InputDecoration(labelText: 'Telephone'),
+                decoration: const InputDecoration(labelText: 'ໂທລະສັບ'),
               ),
               TextField(
                 controller: ageController,
-                decoration: const InputDecoration(labelText: 'Age'),
+                decoration: const InputDecoration(labelText: 'ອາຍຸ'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: genderController,
-                decoration: const InputDecoration(labelText: 'Gender'),
+                decoration: const InputDecoration(labelText: 'ເພດ'),
               ),
               TextField(
                 controller: villageController,
-                decoration: const InputDecoration(labelText: 'Village'),
+                decoration: const InputDecoration(labelText: 'ບ້ານ'),
               ),
               TextField(
                 controller: districtController,
-                decoration: const InputDecoration(labelText: 'District'),
+                decoration: const InputDecoration(labelText: 'ເມືອງ'),
               ),
               TextField(
                 controller: provinceController,
-                decoration: const InputDecoration(labelText: 'Province'),
+                decoration: const InputDecoration(labelText: 'ແຂວງ'),
               ),
               TextField(
                 controller: roleController,
-                decoration: const InputDecoration(labelText: 'Role'),
+                decoration: const InputDecoration(labelText: 'ບົດບາດ'),
               ),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: const Text('ຍົກເລີກ'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
             },
           ),
           TextButton(
-            child: const Text('Update'),
+            child: const Text('ອັບເດດ'),
             onPressed: () async {
               try {
                 // Update the customer data

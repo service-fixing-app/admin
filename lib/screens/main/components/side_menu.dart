@@ -162,10 +162,36 @@ class SideMenu extends StatelessWidget {
               ),
             ],
           ),
-          DrawerListTile(
-            title: "ແຈ້ງເຕືອນ",
-            svgSrc: "assets/icons/menu_notification.svg",
-            press: () {},
+          ExpansionTile(
+            title: DrawerListTile(
+              title: "ແຈ້ງເຕືອນ",
+              svgSrc: "assets/icons/menu_notification.svg",
+              press: () {
+                // Handle ລາຍງານ menu item press
+              },
+            ),
+            children: [
+              ListTile(
+                title: const Text(
+                  "ແຈ້ງເຕືອນສະໜັກຮ້ານສ້ອມແປງລົດໃໝ່",
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.repairshopNotification);
+                },
+              ),
+              ListTile(
+                title: const Text(
+                  "ແຈ້ງເຕືອນສະໜັກຮ້ານແກ່ລົດລົດໃໝ່",
+                  style: TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.towingshopNotification);
+                },
+              ),
+            ],
           ),
           DrawerListTile(
             title: "ການຕັ້ງຄ່າ",

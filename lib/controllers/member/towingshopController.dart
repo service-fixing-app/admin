@@ -18,7 +18,10 @@ class TowingshopController extends GetxController {
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        towingshopData.value = List<Map<String, dynamic>>.from(responseData);
+        final allRepairshopData = List<Map<String, dynamic>>.from(responseData);
+        towingshopData.value = allRepairshopData
+            .where((shop) => shop['permission_status'] == "true")
+            .toList();
         for (var entry in responseData) {
           String birthdateString = entry['birthdate'];
           List<String> parts = birthdateString.split('/');

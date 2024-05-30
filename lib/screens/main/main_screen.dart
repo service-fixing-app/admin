@@ -8,6 +8,8 @@ import 'package:admin/screens/member/customer.dart';
 import 'package:admin/screens/member/repairshop.dart';
 import 'package:admin/screens/member/towingshop.dart';
 import 'package:admin/screens/member/update_menber/update_customer.dart';
+import 'package:admin/screens/notification/repairshop_notification.dart';
+import 'package:admin/screens/notification/towingshop_notification.dart';
 import 'package:admin/screens/report/customer_resport.dart';
 import 'package:admin/screens/report/repairshopScore_report.dart';
 import 'package:admin/screens/report/repairshop_report.dart';
@@ -79,6 +81,10 @@ class MainScreen extends StatelessWidget {
                     return const AddTowingshop();
                   case MenuItems.updateCustomer:
                     return UpdateCustomer();
+                  case MenuItems.repairshopNotification:
+                    return const RepairshopNotification();
+                  case MenuItems.towingshopNotification:
+                    return const TowingshopNotification();
                   // case MenuItems.updateRepairshop:
                   //   return UpdateCustomer();
                   // case MenuItems.updateTowingshop:

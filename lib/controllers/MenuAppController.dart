@@ -19,6 +19,8 @@ enum MenuItems {
   updateCustomer,
   updateRepairshop,
   updateTowingshop,
+  towingshopNotification,
+  repairshopNotification,
 }
 
 class MenuAppController extends GetxController {

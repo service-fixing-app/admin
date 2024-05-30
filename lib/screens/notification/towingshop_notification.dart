@@ -1,26 +1,26 @@
-import 'package:admin/controllers/deleteRepairshopController.dart';
-import 'package:admin/controllers/member/repairshopController.dart';
-import 'package:admin/controllers/updateRepairshopController.dart';
+import 'package:admin/controllers/deleteTowingshopController.dart';
+import 'package:admin/controllers/member/towingshopNotificationController.dart';
+import 'package:admin/controllers/updatetowingshopController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:admin/constants.dart';
 
-class Repairshop extends StatefulWidget {
-  const Repairshop({Key? key}) : super(key: key);
+class TowingshopNotification extends StatefulWidget {
+  const TowingshopNotification({Key? key}) : super(key: key);
 
   @override
-  State<Repairshop> createState() => _RepairshopState();
+  State<TowingshopNotification> createState() => _TowingshopNotificationState();
 }
 
-class _RepairshopState extends State<Repairshop> {
-  final RepairshopController _repairshopController =
-      Get.put(RepairshopController());
+class _TowingshopNotificationState extends State<TowingshopNotification> {
+  final TowingshopNotificationController _towingshopNotificationController =
+      Get.put(TowingshopNotificationController());
   static int _rowsPerPage = 10;
 
   @override
   void initState() {
     super.initState();
-    _repairshopController.fetchRepairshopData();
+    _towingshopNotificationController.fetchTowingshopData();
   }
 
   @override
@@ -37,12 +37,14 @@ class _RepairshopState extends State<Repairshop> {
           SizedBox(
             width: double.infinity,
             child: Obx(() {
-              if (_repairshopController.repairshopData.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+              if (_towingshopNotificationController.towingshopData.isEmpty) {
+                return const Center(
+                  child: Text('ຍັງບໍ່ມີຂໍ້ຄວາມໃໝ່'),
+                );
               }
               return PaginatedDataTable(
                 header: const Text(
-                  "ຈັດການຂໍ້ມູນຮ້ານສ້ອມແປງ",
+                  "ຈັດການຂໍ້ມູນຮ້ານແກ່ລົດ",
                   style: TextStyle(color: fontColorDefualt),
                 ),
                 columns: const [
@@ -137,8 +139,8 @@ class _RepairshopState extends State<Repairshop> {
                               color: fontColorDefualt,
                               fontWeight: FontWeight.bold))),
                 ],
-                source:
-                    RepairshopDataSource(_repairshopController.repairshopData),
+                source: TowingshopDataSource(
+                    _towingshopNotificationController.towingshopData),
                 rowsPerPage: _rowsPerPage,
                 availableRowsPerPage: const [5, 10, 20],
                 onRowsPerPageChanged: (rowsPerPage) {
@@ -155,29 +157,31 @@ class _RepairshopState extends State<Repairshop> {
   }
 }
 
-class RepairshopDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> reapairshopData;
+class TowingshopDataSource extends DataTableSource {
+  final List<Map<String, dynamic>> towingshopData;
 
-  RepairshopDataSource(this.reapairshopData);
+  TowingshopDataSource(this.towingshopData);
 
   @override
   DataRow? getRow(int index) {
-    if (index >= reapairshopData.length) return null;
-    final repairshop = reapairshopData[index];
-    return customerDataRow(repairshop);
+    if (index >= towingshopData.length) return null;
+    final customer = towingshopData[index];
+    return customerDataRow(customer);
   }
 
   @override
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => reapairshopData.length;
+  int get rowCount => towingshopData.length;
 
   @override
   int get selectedRowCount => 0;
 }
 
-DataRow customerDataRow(Map<String, dynamic> repairshop) {
+DataRow customerDataRow(Map<String, dynamic> towingshop) {
+  final TowingshopNotificationController _towingshopNotificationController =
+      Get.put(TowingshopNotificationController());
   return DataRow(
     cells: [
       DataCell(
@@ -185,46 +189,38 @@ DataRow customerDataRow(Map<String, dynamic> repairshop) {
           children: [
             CircleAvatar(
               backgroundImage:
-                  NetworkImage(repairshop['profile_image']!.toString()),
+                  NetworkImage(towingshop['profile_image']!.toString()),
             ),
           ],
         ),
       ),
-      DataCell(Text(repairshop['id'].toString())),
-      DataCell(Text(repairshop['shop_name'].toString())),
-      DataCell(Text(repairshop['manager_name'].toString())),
-      DataCell(Text(repairshop['tel'].toString())),
-      DataCell(Text(repairshop['age'].toString())),
-      DataCell(Text(repairshop['gender'].toString())),
-      DataCell(Text(repairshop['birthdate'].toString())),
-      DataCell(Text(repairshop['village'].toString())),
-      DataCell(Text(repairshop['district'].toString())),
-      DataCell(Text(repairshop['province'].toString())),
-      DataCell(Text(repairshop['type_service'].toString())),
-      DataCell(Text(repairshop['latitude'].toString())),
-      DataCell(Text(repairshop['longitude'].toString())),
-      DataCell(Text(repairshop['role'].toString())),
-      DataCell(Text(repairshop['createdAt'].toString())),
-      DataCell(Text(repairshop['updatedAt'].toString())),
+      DataCell(Text(towingshop['id'].toString())),
+      DataCell(Text(towingshop['shop_name'].toString())),
+      DataCell(Text(towingshop['manager_name'].toString())),
+      DataCell(Text(towingshop['tel'].toString())),
+      DataCell(Text(towingshop['age'].toString())),
+      DataCell(Text(towingshop['gender'].toString())),
+      DataCell(Text(towingshop['birthdate'].toString())),
+      DataCell(Text(towingshop['village'].toString())),
+      DataCell(Text(towingshop['district'].toString())),
+      DataCell(Text(towingshop['province'].toString())),
+      DataCell(Text(towingshop['type_service'].toString())),
+      DataCell(Text(towingshop['latitude'].toString())),
+      DataCell(Text(towingshop['longitude'].toString())),
+      DataCell(Text(towingshop['role'].toString())),
+      DataCell(Text(towingshop['createdAt'].toString())),
+      DataCell(Text(towingshop['updatedAt'].toString())),
       DataCell(
         Row(
           children: [
-            Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  _showDeleteConfirmationDialog(context, repairshop['id']);
-                },
-              ),
+            ElevatedButton(
+              onPressed: () async {
+                //logic
+                await _towingshopNotificationController.UpdatePermission(
+                    towingshop['id']);
+              },
+              child: const Text('ອະນຸມັດເປີດຮ້ານ'),
             ),
-            Builder(builder: (context) {
-              return IconButton(
-                icon: const Icon(Icons.edit, color: Colors.blue),
-                onPressed: () {
-                  _showUpdateRepairshopDialog(context, repairshop);
-                },
-              );
-            }),
           ],
         ),
       ),
@@ -232,79 +228,41 @@ DataRow customerDataRow(Map<String, dynamic> repairshop) {
   );
 }
 
-Future<void> _showDeleteConfirmationDialog(
-    BuildContext context, String repairshopId) async {
-  final DeleteRepairshopController deleteRepairshopController =
-      Get.put(DeleteRepairshopController());
-
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('ຢືນຢັນການລຶບ'),
-        content: const SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຮ້ານສ້ອມແປງນີ້?'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('ຍົກເລີກ'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-          TextButton(
-            child: const Text('ລຶບ'),
-            onPressed: () async {
-              Navigator.of(context).pop();
-              await deleteRepairshopController.deleteRepairshop(repairshopId);
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<void> _showUpdateRepairshopDialog(
-    BuildContext context, Map<String, dynamic> repairshop) {
+Future<void> _showUpdateTowingshopDialog(
+    BuildContext context, Map<String, dynamic> towingshop) {
   final TextEditingController shopNameController =
-      TextEditingController(text: repairshop['shop_name'].toString());
+      TextEditingController(text: towingshop['shop_name'].toString());
   final TextEditingController managerNameController =
-      TextEditingController(text: repairshop['manager_name'].toString());
+      TextEditingController(text: towingshop['manager_name'].toString());
   final TextEditingController telController =
-      TextEditingController(text: repairshop['tel'].toString());
+      TextEditingController(text: towingshop['tel'].toString());
   final TextEditingController ageController =
-      TextEditingController(text: repairshop['age'].toString());
+      TextEditingController(text: towingshop['age'].toString());
   final TextEditingController genderController =
-      TextEditingController(text: repairshop['gender'].toString());
+      TextEditingController(text: towingshop['gender'].toString());
   final TextEditingController villageController =
-      TextEditingController(text: repairshop['village'].toString());
+      TextEditingController(text: towingshop['village'].toString());
   final TextEditingController districtController =
-      TextEditingController(text: repairshop['district'].toString());
+      TextEditingController(text: towingshop['district'].toString());
   final TextEditingController provinceController =
-      TextEditingController(text: repairshop['province'].toString());
+      TextEditingController(text: towingshop['province'].toString());
   final TextEditingController typeServiceController =
-      TextEditingController(text: repairshop['type_service'].toString());
+      TextEditingController(text: towingshop['type_service'].toString());
   final TextEditingController latitudeController =
-      TextEditingController(text: repairshop['latitude'].toString());
+      TextEditingController(text: towingshop['latitude'].toString());
   final TextEditingController longitudeController =
-      TextEditingController(text: repairshop['longitude'].toString());
+      TextEditingController(text: towingshop['longitude'].toString());
   final TextEditingController roleController =
-      TextEditingController(text: repairshop['role'].toString());
+      TextEditingController(text: towingshop['role'].toString());
 
   return showDialog<void>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      final UpdateRepairshopController updateRepairshopController =
-          Get.put(UpdateRepairshopController());
+      final UpdateTowingshopController updateTowingshopController =
+          Get.put(UpdateTowingshopController());
       return AlertDialog(
-        title: const Text('ອັບເດດຂໍ້ມູນຮ້ານສ້ອມແປງ'),
+        title: const Text('ອັບເດດຂໍ້ມູນຮ້ານແກ່ລົດ'),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
@@ -362,32 +320,32 @@ Future<void> _showUpdateRepairshopDialog(
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('ຍົກເລີກ'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
             },
           ),
           TextButton(
-            child: const Text('ອັບເດດ'),
+            child: const Text('Update'),
             onPressed: () async {
               try {
                 // Update the customer data
-                repairshop['shop_name'] = shopNameController.text;
-                repairshop['manager_name'] = managerNameController.text;
-                repairshop['tel'] = telController.text;
-                repairshop['age'] = int.tryParse(ageController.text) ?? 0;
-                repairshop['gender'] = genderController.text;
-                repairshop['village'] = villageController.text;
-                repairshop['district'] = districtController.text;
-                repairshop['province'] = provinceController.text;
-                repairshop['type_service'] = typeServiceController.text;
-                repairshop['latitude'] = latitudeController.text;
-                repairshop['longitude'] = longitudeController.text;
-                repairshop['role'] = roleController.text;
+                towingshop['shop_name'] = shopNameController.text;
+                towingshop['manager_name'] = managerNameController.text;
+                towingshop['tel'] = telController.text;
+                towingshop['age'] = int.tryParse(ageController.text) ?? 0;
+                towingshop['gender'] = genderController.text;
+                towingshop['village'] = villageController.text;
+                towingshop['district'] = districtController.text;
+                towingshop['province'] = provinceController.text;
+                towingshop['type_service'] = typeServiceController.text;
+                towingshop['latitude'] = latitudeController.text;
+                towingshop['longitude'] = longitudeController.text;
+                towingshop['role'] = roleController.text;
 
                 Navigator.of(context).pop();
                 // Dispatch an event to update the customer using GetX
-                await updateRepairshopController.updateRepairshop(repairshop);
+                await updateTowingshopController.updateTowingshop(towingshop);
               } catch (e) {
                 // Handle errors
                 print('Error updating customer: $e');

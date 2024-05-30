@@ -17,8 +17,15 @@ class GetTowingshopController extends GetxController {
         Uri.parse('http://localhost:5000/api/towingtruck/allTowingtruck'),
       );
       if (response.statusCode == 200) {
+        // final responseData = json.decode(response.body);
+        // towingshopData.value = List<Map<String, dynamic>>.from(responseData);
         final responseData = json.decode(response.body);
-        towingshopData.value = List<Map<String, dynamic>>.from(responseData);
+        var allRepairshopData = List<Map<String, dynamic>>.from(responseData);
+
+        // Filter data to only include towingshops with permission_status set to "false"
+        towingshopData.value = allRepairshopData
+            .where((shop) => shop['permission_status'] == "true")
+            .toList();
         print('Successfully fetched repair data $towingshopData');
       } else {
         // Error handling

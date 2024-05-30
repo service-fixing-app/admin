@@ -1,11 +1,9 @@
 import 'package:admin/controllers/deleteTowingshopController.dart';
 import 'package:admin/controllers/member/towingshopController.dart';
-import 'package:admin/controllers/updatecustomerController.dart';
 import 'package:admin/controllers/updatetowingshopController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:admin/constants.dart';
-import 'package:admin/controllers/deleteCustomerController.dart';
 
 class Towingshop extends StatefulWidget {
   const Towingshop({Key? key}) : super(key: key);
@@ -44,7 +42,7 @@ class _TowingshopState extends State<Towingshop> {
               }
               return PaginatedDataTable(
                 header: const Text(
-                  "ຂໍ້ມູນຮ້ານແກ່ລົດ",
+                  "ຈັດການຂໍ້ມູນຮ້ານແກ່ລົດ",
                   style: TextStyle(color: fontColorDefualt),
                 ),
                 columns: const [
@@ -244,23 +242,23 @@ Future<void> _showDeleteConfirmationDialog(
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Confirm Delete'),
+        title: const Text('ຢືນຢັນການລຶບ'),
         content: const SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text('Are you sure you want to delete this customer?'),
+              Text('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຮ້ານແກ່ລົດນີ້?'),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: const Text('ຍົກເລີກ'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
             },
           ),
           TextButton(
-            child: const Text('Delete'),
+            child: const Text('ລຶບ'),
             onPressed: () async {
               Navigator.of(context).pop();
               await deleteTowingshopController.deleteTowingshop(towingshopId);
@@ -306,46 +304,46 @@ Future<void> _showUpdateTowingshopDialog(
       final UpdateTowingshopController updateTowingshopController =
           Get.put(UpdateTowingshopController());
       return AlertDialog(
-        title: const Text('Update Customer'),
+        title: const Text('ອັບເດດຂໍ້ມູນຮ້ານແກ່ລົດ'),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
               TextField(
                 controller: shopNameController,
-                decoration: const InputDecoration(labelText: 'Shop Name'),
+                decoration: const InputDecoration(labelText: 'ຊື່ຮ້ານສ້ອມແປງ'),
               ),
               TextField(
                 controller: managerNameController,
-                decoration: const InputDecoration(labelText: 'Manager Name'),
+                decoration: const InputDecoration(labelText: 'ຊື່ເຈົ້າຂອງຮ້ານ'),
               ),
               TextField(
                 controller: telController,
-                decoration: const InputDecoration(labelText: 'Telephone'),
+                decoration: const InputDecoration(labelText: 'ໂທລະສັບ'),
               ),
               TextField(
                 controller: ageController,
-                decoration: const InputDecoration(labelText: 'Age'),
+                decoration: const InputDecoration(labelText: 'ອາຍຸ'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: genderController,
-                decoration: const InputDecoration(labelText: 'Gender'),
+                decoration: const InputDecoration(labelText: 'ເພດ'),
               ),
               TextField(
                 controller: villageController,
-                decoration: const InputDecoration(labelText: 'Village'),
+                decoration: const InputDecoration(labelText: 'ບ້ານ'),
               ),
               TextField(
                 controller: districtController,
-                decoration: const InputDecoration(labelText: 'District'),
+                decoration: const InputDecoration(labelText: 'ເມືອງ'),
               ),
               TextField(
                 controller: provinceController,
-                decoration: const InputDecoration(labelText: 'Province'),
+                decoration: const InputDecoration(labelText: 'ແຂວງ'),
               ),
               TextField(
                 controller: typeServiceController,
-                decoration: const InputDecoration(labelText: 'TypeService'),
+                decoration: const InputDecoration(labelText: 'ປະເພດການບໍລິການ'),
               ),
               TextField(
                 controller: latitudeController,
@@ -357,7 +355,7 @@ Future<void> _showUpdateTowingshopDialog(
               ),
               TextField(
                 controller: roleController,
-                decoration: const InputDecoration(labelText: 'Role'),
+                decoration: const InputDecoration(labelText: 'ບົດບາດ'),
               ),
             ],
           ),
