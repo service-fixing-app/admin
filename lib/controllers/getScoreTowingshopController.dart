@@ -27,7 +27,7 @@ class GetScoreTowingshopController extends GetxController {
           var towingtruck = review['towingtruck'];
           if (towingtruck != null && towingtruck['id'] != null) {
             String shopId = towingtruck['id'];
-            String shopName = towingtruck['shop_name'];
+            // String shopName = towingtruck['shop_name'];
             int rating = review['rating'];
 
             if (!shopRatings.containsKey(shopId)) {
@@ -51,7 +51,8 @@ class GetScoreTowingshopController extends GetxController {
         // Set shop_id, shop_name, and average to towingScoreData
         shopAverages.forEach((shopId, averageRating) {
           var shopName = responseData.firstWhere((review) =>
-              review['towingtruck']['id'] == shopId)['towingtruck']['shop_name'];
+                  review['towingtruck']['id'] == shopId)['towingtruck']
+              ['shop_name'];
 
           // Check if shop_id already exists in towingScoreData
           if (!towingScoreData.any((entry) => entry['shop_id'] == shopId)) {
@@ -70,7 +71,7 @@ class GetScoreTowingshopController extends GetxController {
       }
     } catch (e) {
       // Error handling
-      print("Error fetching repair data: $e");
+      // print("Error fetching repair data: $e");
     }
   }
 }

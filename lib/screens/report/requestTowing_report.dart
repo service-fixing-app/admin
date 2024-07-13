@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:admin/controllers/getRequestRepairController.dart';
+import 'package:admin/controllers/getRequestTowingController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_data_table/web_data_table.dart';
 import 'package:get/get.dart';
@@ -21,8 +22,8 @@ class _RequestTowingReportState extends State<RequestTowingReport> {
   List<String> _selectedRowKeys = [];
   int _rowsPerPage = 10;
 
-  final GetRequestRepairController _getRequestRepairController =
-      Get.put(GetRequestRepairController());
+  final GetRequestTowingshopController _getRequestTowingshopController =
+      Get.put(GetRequestTowingshopController());
 
   @override
   void initState() {
@@ -32,7 +33,7 @@ class _RequestTowingReportState extends State<RequestTowingReport> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       // Timer logic
     });
-    _getRequestRepairController.fetchRequestRepairData();
+    _getRequestTowingshopController.fetchRequestRepairData();
   }
 
   @override
@@ -46,7 +47,7 @@ class _RequestTowingReportState extends State<RequestTowingReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        if (_getRequestRepairController.requestRepairData.isEmpty) {
+        if (_getRequestTowingshopController.requestRepairData.isEmpty) {
           return Center(child: CircularProgressIndicator());
         } else {
           return SingleChildScrollView(
@@ -61,7 +62,7 @@ class _RequestTowingReportState extends State<RequestTowingReport> {
                       width: 100,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.red, // Background color
+                          backgroundColor: Colors.red, // Background color
                         ),
                         child: const Text(
                           'Delete',
@@ -153,7 +154,7 @@ class _RequestTowingReportState extends State<RequestTowingReport> {
                       dataCell: (value) => DataCell(Text('$value')),
                     ),
                   ],
-                  rows: _getRequestRepairController.requestRepairData,
+                  rows: _getRequestTowingshopController.requestRepairData,
                   selectedRowKeys: _selectedRowKeys,
                   onTapRow: (rows, index) {
                     print('onTapRow(): index = $index, row = ${rows[index]}');

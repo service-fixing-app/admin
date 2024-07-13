@@ -79,7 +79,7 @@ class ProfileCard extends StatelessWidget {
                   style: const TextStyle(color: fontColorDefualt),
                 ),
               ),
-            const Icon(Icons.keyboard_arrow_down),
+            // const Icon(Icons.keyboard_arrow_down),
           ],
         ),
       );

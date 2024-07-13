@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:admin/controllers/deleteRepairshopController.dart';
-import 'package:admin/controllers/getScoreRapairshopController.dart';
+import 'package:admin/controllers/getScoreTowingshopController.dart';
+import 'package:admin/controllers/getShopTopCannellController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_data_table/web_data_table.dart';
 import 'package:get/get.dart';
@@ -11,54 +12,44 @@ import 'package:printing/printing.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 
-class RepairshopScoreReport extends StatefulWidget {
-  const RepairshopScoreReport({Key? key}) : super(key: key);
+class ShopCannelRequestReport extends StatefulWidget {
+  const ShopCannelRequestReport({Key? key}) : super(key: key);
 
   @override
-  State<RepairshopScoreReport> createState() => _RepairshopScoreReportState();
+  State<ShopCannelRequestReport> createState() =>
+      _ShopCannelRequestReportState();
 }
 
-class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
+class _ShopCannelRequestReportState extends State<ShopCannelRequestReport> {
   late String _sortColumnName;
   late bool _sortAscending;
   List<String>? _filterTexts;
-  bool _willSearch = true;
   Timer? _timer;
-  int? _latestTick;
   List<String> _selectedRowKeys = [];
   int _rowsPerPage = 10;
   late TextEditingController _dateRangeController;
-  DateTime? _startDate;
-  DateTime? _endDate;
 
-  final GetScoreRepairshopController _repairshopScoreController =
-      Get.put(GetScoreRepairshopController());
+  final GetTopShopCannelRequest _getTopShopCannelRequest =
+      Get.put(GetTopShopCannelRequest());
   final DeleteRepairshopController deleteRepairshopController =
       Get.put(DeleteRepairshopController());
 
   @override
   void initState() {
     super.initState();
-    _sortColumnName = 'id';
-    _sortAscending = true;
+    _sortColumnName = 'cancelled_count';
+    _sortAscending = false;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       // Timer logic
     });
-    _repairshopScoreController.fetchScoreRepairshopData();
-    _startDate = null;
-    _endDate = null;
+    _getTopShopCannelRequest.fetchshopData();
+
     _dateRangeController = TextEditingController(text: '');
   }
 
   // start code filter data by date
   String _formatDate(DateTime date) {
     return DateFormat('dd/MM/yyyy').format(date);
-  }
-
-  String _formatDateRange(DateTime? startDate, DateTime? endDate) {
-    String start = startDate != null ? _formatDate(startDate) : '';
-    String end = endDate != null ? _formatDate(endDate) : '';
-    return '$start - $end';
   }
 
   Future<void> _selectDateRange(BuildContext context) async {
@@ -68,36 +59,9 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      setState(() {
-        _startDate = picked.start;
-        _endDate = picked.end;
-        _dateRangeController.text = _formatDateRange(_startDate, _endDate);
-      });
+      setState(() {});
     }
   }
-
-  List<Map<String, dynamic>> getFilteredRows() {
-    if (_startDate == null && _endDate == null) {
-      return _repairshopScoreController.repairScoreData;
-    } else {
-      return _repairshopScoreController.repairScoreData.where((row) {
-        DateTime createdAt = DateTime.parse(row['createdAt']);
-        bool isInDateRange = true;
-        if (_startDate != null && _endDate != null) {
-          isInDateRange =
-              createdAt.isAfter(_startDate!) && createdAt.isBefore(_endDate!);
-        } else if (_startDate != null) {
-          isInDateRange = createdAt.isAfter(_startDate!);
-        } else if (_endDate != null) {
-          isInDateRange = createdAt.isBefore(_endDate!);
-        }
-
-        return isInDateRange;
-      }).toList();
-    }
-  }
-
-  // end code filter data by date
 
   @override
   void dispose() {
@@ -144,7 +108,7 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
 
   // printing
   Future<void> _printDataTable() async {
-    List<Map<String, dynamic>> rows = getFilteredRows();
+    List<Map<String, dynamic>> rows = _getTopShopCannelRequest.shopcannelData;
     // Load the font
     final ByteData fontData =
         await rootBundle.load('assets/fonts/phetsarath_ot.ttf');
@@ -152,22 +116,23 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
     final ttf = pw.Font.ttf(fontBytes.buffer.asByteData());
     final pdf = pw.Document();
     final headers = [
-      'ID',
-      'ຊື່ຮ້ານສ້ອມແປງ',
-      'ຄະແນນ',
+      'ລຳດັບ',
+      'ລະຫັດຮ້ານ',
+      'ຊື່ຮ້ານ',
+      'ຈຳນວນທີ່ຍົກເລີກການຮ້ອງ',
     ];
     final data = rows.map((row) {
       return [
+        row['sequence'],
         row['shop_id'],
         row['shop_name'],
-        row['average'],
+        row['cancelled_count'],
       ];
     }).toList();
 
     pdf.addPage(pw.Page(
-      // pageFormat: PdfPageFormat.a4.landscape,
       build: (pw.Context context) {
-        return pw.Table.fromTextArray(
+        return pw.TableHelper.fromTextArray(
           headers: headers,
           data: data,
           border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
@@ -197,17 +162,23 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        if (_repairshopScoreController.repairScoreData.isEmpty) {
+        if (_getTopShopCannelRequest.shopcannelData.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         } else {
-          List<Map<String, dynamic>> filteredRows = getFilteredRows();
+          var sortedData = List<Map<String, dynamic>>.from(
+              _getTopShopCannelRequest.shopcannelData);
+          sortedData.sort(
+              (a, b) => a['cancelled_count'].compareTo(b['cancelled_count']));
+          for (int i = 0; i < sortedData.length; i++) {
+            sortedData[i]['sequence'] = i + 1;
+          }
           return SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
                   WebDataTable(
-                    header: const Text('ລາຍງານຈຳນວນຮ້ານສ້ອມແປງລົດ'),
+                    header: const Text('ລາຍງານຈຳນວນຮ້ານທີ່ຖືກຍົກເລີກ'),
                     actions: [
                       if (_selectedRowKeys.isNotEmpty)
                         SizedBox(
@@ -237,57 +208,31 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
                             ),
                           ),
                         ),
-                      Container(
-                        child: Row(
-                          children: [
-                            // SizedBox(
-                            //   width: 300,
-                            //   child: TextFormField(
-                            //     controller: _dateRangeController,
-                            //     readOnly: true,
-                            //     decoration: InputDecoration(
-                            //       labelText: 'ວັນທີ່ເລີ່ມ - ວັນທີ່ຈົບ',
-                            //       labelStyle: const TextStyle(
-                            //         fontSize: 18,
-                            //         fontFamily: 'phetsarath_ot',
-                            //         fontWeight: FontWeight.w500,
-                            //       ),
-                            //       border: OutlineInputBorder(
-                            //         borderRadius: BorderRadius.circular(6.0),
-                            //       ),
-                            //       suffixIcon: IconButton(
-                            //         icon: const Icon(
-                            //             Icons.calendar_month_outlined),
-                            //         onPressed: () => _selectDateRange(context),
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
-                            const SizedBox(width: 10),
-                            SizedBox(
-                              height: 50,
-                              width: 100,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  // Change button color as needed
-                                ),
-                                onPressed: _printDataTable,
-                                child: const Row(
-                                  children: [
-                                    Icon(Icons.print),
-                                    SizedBox(width: 10),
-                                    Text('ພິມ'),
-                                  ],
+                      Row(
+                        children: [
+                          const SizedBox(width: 10),
+                          SizedBox(
+                            height: 50,
+                            width: 100,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                               ),
-                            )
-                          ],
-                        ),
+                              onPressed: _printDataTable,
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.print),
+                                  SizedBox(width: 10),
+                                  Text('ພິມ'),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ],
                     source: WebDataTableSource(
@@ -296,8 +241,13 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
                       filterTexts: _filterTexts,
                       columns: [
                         WebDataColumn(
+                          name: 'sequence',
+                          label: const Text('ລຳດັບ'),
+                          dataCell: (value) => DataCell(Text('$value')),
+                        ),
+                        WebDataColumn(
                           name: 'shop_id',
-                          label: const Text('ID'),
+                          label: const Text('ລະຫັດຂອງຮ້ານ'),
                           dataCell: (value) => DataCell(
                             SizedBox(
                               width: 100,
@@ -316,8 +266,8 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
                           ),
                         ),
                         WebDataColumn(
-                          name: 'average',
-                          label: const Text('Grade'),
+                          name: 'cancelled_count',
+                          label: const Text('ຈຳນວນຄັ້ງທີີ່ຍົກເລີກ'),
                           dataCell: (value) => DataCell(
                             SizedBox(
                               width: 200,
@@ -326,7 +276,7 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
                           ),
                         ),
                       ],
-                      rows: filteredRows,
+                      rows: sortedData,
                       selectedRowKeys: _selectedRowKeys,
                       onTapRow: (rows, index) {
                         print(
@@ -343,7 +293,7 @@ class _RepairshopScoreReportState extends State<RepairshopScoreReport> {
                     ),
                     horizontalMargin: 100,
                     onPageChanged: (offset) {
-                      print('onPageChanged(): offset = $offset');
+                      // print('onPageChanged(): offset = $offset');
                     },
                     onSort: (columnName, ascending) {
                       print(

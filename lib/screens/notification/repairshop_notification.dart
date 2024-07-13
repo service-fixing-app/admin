@@ -44,7 +44,7 @@ class _RepairshopNotificationState extends State<RepairshopNotification> {
               }
               return PaginatedDataTable(
                 header: const Text(
-                  "ຈັດການຂໍ້ມູນຮ້ານສ້ອມແປງ",
+                  "ຂໍ້ມູນອະນຸມັດເປີດຮ້ານສ້ອມແປງ",
                   style: TextStyle(color: fontColorDefualt),
                 ),
                 columns: const [
@@ -213,13 +213,37 @@ DataRow customerDataRow(Map<String, dynamic> repairshop) {
       DataCell(
         Row(
           children: [
-            ElevatedButton(
-              onPressed: () async {
-                //logic
-                await _repairshopNotificationController.UpdatePermission(
-                    repairshop['id']);
-              },
-              child: const Text('ອະນຸມັດເປີດຮ້ານ'),
+            // ElevatedButton(
+            //   onPressed: () async {
+            //     //logic
+            // await _repairshopNotificationController.UpdatePermission(
+            //     repairshop['id']);
+            //   },
+            //   child: const Text('ອະນຸມັດເປີດຮ້ານ'),
+            // ),
+            Builder(
+              builder: (context) => Tooltip(
+                message: 'ອະນຸມັດເປີດຮ້ານ',
+                child: IconButton(
+                  icon:
+                      const Icon(Icons.check_box_rounded, color: Colors.green),
+                  onPressed: () async {
+                    await _repairshopNotificationController.UpdatePermission(
+                        repairshop['id']);
+                  },
+                ),
+              ),
+            ),
+            Builder(
+              builder: (context) => Tooltip(
+                message: 'ລຶບ',
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _showDeleteConfirmationDialog(context, repairshop['id']);
+                  },
+                ),
+              ),
             ),
           ],
         ),

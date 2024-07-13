@@ -190,22 +190,44 @@ DataRow customerDataRow(Map<String, dynamic> customer) {
       DataCell(
         Row(
           children: [
+            // Builder(
+            //   builder: (context) => IconButton(
+            //     icon: const Icon(Icons.delete, color: Colors.red),
+            //     onPressed: () {
+            //       _showDeleteConfirmationDialog(context, customer['id']);
+            //     },
+            //   ),
+            // ),
+            // Builder(builder: (context) {
+            //   return IconButton(
+            //     icon: const Icon(Icons.edit, color: Colors.blue),
+            //     onPressed: () {
+            //       _showUpdateCustomerDialog(context, customer);
+            //     },
+            //   );
+            // }),
             Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  _showDeleteConfirmationDialog(context, customer['id']);
-                },
+              builder: (context) => Tooltip(
+                message: 'ລຶບ',
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _showDeleteConfirmationDialog(context, customer['id']);
+                  },
+                ),
               ),
             ),
-            Builder(builder: (context) {
-              return IconButton(
-                icon: const Icon(Icons.edit, color: Colors.blue),
-                onPressed: () {
-                  _showUpdateCustomerDialog(context, customer);
-                },
-              );
-            }),
+            Builder(
+              builder: (context) => Tooltip(
+                message: 'ແກ້ໄຂ',
+                child: IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.green),
+                  onPressed: () {
+                    _showUpdateCustomerDialog(context, customer);
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),

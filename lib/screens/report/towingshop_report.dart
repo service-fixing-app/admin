@@ -308,6 +308,15 @@ class _TowingshopReportState extends State<TowingshopReport> {
                   filterTexts: _filterTexts,
                   columns: [
                     WebDataColumn(
+                      name: 'profile_image',
+                      label: const Text('ຮູບ profile'),
+                      dataCell: (value) => DataCell(
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(value.toString()),
+                        ),
+                      ),
+                    ),
+                    WebDataColumn(
                       name: 'id',
                       label: const Text('ID'),
                       dataCell: (value) => DataCell(Text('$value')),
@@ -368,16 +377,6 @@ class _TowingshopReportState extends State<TowingshopReport> {
                       dataCell: (value) => DataCell(Text('$value')),
                     ),
                     WebDataColumn(
-                      name: 'profile_image',
-                      label: const Text('ຮູບ profile'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'document_verify',
-                      label: const Text('ຮູບເອກະສານຢືນຢັນຕົວຕົນ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
                       name: 'role',
                       label: const Text('role'),
                       dataCell: (value) => DataCell(Text('$value')),
@@ -391,6 +390,26 @@ class _TowingshopReportState extends State<TowingshopReport> {
                       name: 'updatedAt',
                       label: const Text('updateAt'),
                       dataCell: (value) => DataCell(Text('$value')),
+                    ),
+                    WebDataColumn(
+                      name: 'document_verify',
+                      label: const Text('ຮູບເອກະສານຢືນຢັນຕົວຕົນ'),
+                      dataCell: (value) => DataCell(
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              value.toString(),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                   rows: filteredRows,

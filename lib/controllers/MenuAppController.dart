@@ -21,6 +21,7 @@ enum MenuItems {
   updateTowingshop,
   towingshopNotification,
   repairshopNotification,
+  shopCannelRequest
 }
 
 class MenuAppController extends GetxController {

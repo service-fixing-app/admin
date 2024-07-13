@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:admin/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -70,7 +71,7 @@ class LoginController extends GetxController {
         final responseData = json.decode(response.body);
         showCustomerData(responseData);
         print('successfully logined');
-        Get.toNamed('/mainScreen');
+        Get.to(() => MainScreen());
       } else {
         // Error handling
         print("Failed to fetch user data: ${response.statusCode}");

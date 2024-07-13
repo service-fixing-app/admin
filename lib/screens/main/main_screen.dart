@@ -15,6 +15,7 @@ import 'package:admin/screens/report/repairshopScore_report.dart';
 import 'package:admin/screens/report/repairshop_report.dart';
 import 'package:admin/screens/report/requestRepair_report.dart';
 import 'package:admin/screens/report/requestTowing_report.dart';
+import 'package:admin/screens/report/shopCannelRequest_report.dart';
 import 'package:admin/screens/report/towingshopScore_report.dart';
 import 'package:admin/screens/report/towingshop_report.dart';
 import 'package:flutter/material.dart';
@@ -85,6 +86,8 @@ class MainScreen extends StatelessWidget {
                     return const RepairshopNotification();
                   case MenuItems.towingshopNotification:
                     return const TowingshopNotification();
+                  case MenuItems.shopCannelRequest:
+                    return const ShopCannelRequestReport();
                   // case MenuItems.updateRepairshop:
                   //   return UpdateCustomer();
                   // case MenuItems.updateTowingshop:
