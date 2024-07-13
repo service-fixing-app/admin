@@ -25,9 +25,10 @@ class GetScoreRepairshopController extends GetxController {
         Map<String, List<int>> shopRatings = {};
         responseData.forEach((review) {
           var repairshop = review['repairshop'];
-          if (repairshop != null && repairshop['id'] != null) {
+          if (repairshop != null &&
+              repairshop['id'] != null &&
+              repairshop['shop_name'] != null) {
             String shopId = repairshop['id'];
-            // String shopName = repairshop['shop_name'];
             int rating = review['rating'];
 
             if (!shopRatings.containsKey(shopId)) {
@@ -50,8 +51,15 @@ class GetScoreRepairshopController extends GetxController {
 
         // Set shop_id, shop_name, and average to repairScoreData
         shopAverages.forEach((shopId, averageRating) {
-          var shopName = responseData.firstWhere((review) =>
-              review['repairshop']['id'] == shopId)['repairshop']['shop_name'];
+          var shop = responseData.firstWhere(
+            (review) =>
+                review['repairshop'] != null &&
+                review['repairshop']['id'] == shopId &&
+                review['repairshop']['shop_name'] != null,
+            orElse: () => null,
+          );
+          var shopName =
+              shop != null ? shop['repairshop']['shop_name'] : 'Unknown';
 
           // Check if shop_id already exists in repairScoreData
           if (!repairScoreData.any((entry) => entry['shop_id'] == shopId)) {

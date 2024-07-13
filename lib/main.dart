@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           page: () => MainScreen(),
         ),
       ],
-      initialRoute: '/',
+      // initialRoute: '/',
     );
   }
 }
