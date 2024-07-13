@@ -44,7 +44,7 @@ class _TowingshopNotificationState extends State<TowingshopNotification> {
               }
               return PaginatedDataTable(
                 header: const Text(
-                  "ຈັດການຂໍ້ມູນຮ້ານແກ່ລົດ",
+                  "ຂໍ້ມູນອະນຸມັດເປີດຮ້ານແກ່ລົດ",
                   style: TextStyle(color: fontColorDefualt),
                 ),
                 columns: const [
@@ -213,18 +213,81 @@ DataRow customerDataRow(Map<String, dynamic> towingshop) {
       DataCell(
         Row(
           children: [
-            ElevatedButton(
-              onPressed: () async {
-                //logic
-                await _towingshopNotificationController.UpdatePermission(
-                    towingshop['id']);
-              },
-              child: const Text('ອະນຸມັດເປີດຮ້ານ'),
+            // ElevatedButton(
+            // onPressed: () async {
+            //   //logic
+            //   await _towingshopNotificationController.UpdatePermission(
+            //       towingshop['id']);
+            //   },
+            //   child: const Text('ອະນຸມັດເປີດຮ້ານ'),
+            // ),
+            Builder(
+              builder: (context) => Tooltip(
+                message: 'ອະນຸມັດເປີດຮ້ານ',
+                child: IconButton(
+                  icon:
+                      const Icon(Icons.check_box_rounded, color: Colors.green),
+                  onPressed: () async {
+                    //logic
+                    await _towingshopNotificationController.UpdatePermission(
+                        towingshop['id']);
+                  },
+                ),
+              ),
+            ),
+            Builder(
+              builder: (context) => Tooltip(
+                message: 'ລຶບ',
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _showDeleteConfirmationDialog(context, towingshop['id']);
+                  },
+                ),
+              ),
             ),
           ],
         ),
       ),
     ],
+  );
+}
+
+Future<void> _showDeleteConfirmationDialog(
+    BuildContext context, String repairshopId) async {
+  final DeleteTowingshopController deleteTowingshopController =
+      Get.put(DeleteTowingshopController());
+
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('ຢືນຢັນການລຶບ'),
+        content: const SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຮ້ານສ້ອມແປງນີ້?'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('ຍົກເລີກ'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('ລຶບ'),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await deleteTowingshopController.deleteTowingshop(repairshopId);
+            },
+          ),
+        ],
+      );
+    },
   );
 }
 

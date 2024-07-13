@@ -209,22 +209,55 @@ DataRow customerDataRow(Map<String, dynamic> towingshop) {
       DataCell(
         Row(
           children: [
+            // Builder(
+            //   builder: (context) => IconButton(
+            //     icon: const Icon(Icons.delete, color: Colors.red),
+            //     onPressed: () {
+            //       _showDeleteConfirmationDialog(context, towingshop['id']);
+            //     },
+            //   ),
+            // ),
+            // Builder(builder: (context) {
+            //   return IconButton(
+            //     icon: const Icon(Icons.edit, color: Colors.blue),
+            //     onPressed: () {
+            //       _showUpdateTowingshopDialog(context, towingshop);
+            //     },
+            //   );
+            // }),
             Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  _showDeleteConfirmationDialog(context, towingshop['id']);
-                },
+              builder: (context) => Tooltip(
+                message: 'ລຶບ',
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _showDeleteConfirmationDialog(context, towingshop['id']);
+                  },
+                ),
               ),
             ),
-            Builder(builder: (context) {
-              return IconButton(
-                icon: const Icon(Icons.edit, color: Colors.blue),
-                onPressed: () {
-                  _showUpdateTowingshopDialog(context, towingshop);
-                },
-              );
-            }),
+            Builder(
+              builder: (context) => Tooltip(
+                message: 'ແກ້ໄຂ',
+                child: IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.green),
+                  onPressed: () {
+                    _showUpdateTowingshopDialog(context, towingshop);
+                  },
+                ),
+              ),
+            ),
+            Builder(
+              builder: (context) => Tooltip(
+                message: 'block',
+                child: IconButton(
+                  icon: const Icon(Icons.block, color: Colors.yellow),
+                  onPressed: () {
+                    _showBlockConfirmationDialog(context, towingshop['id']);
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -262,6 +295,44 @@ Future<void> _showDeleteConfirmationDialog(
             onPressed: () async {
               Navigator.of(context).pop();
               await deleteTowingshopController.deleteTowingshop(towingshopId);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _showBlockConfirmationDialog(
+    BuildContext context, String towingshopId) async {
+  final DeleteTowingshopController deleteTowingshopController =
+      Get.put(DeleteTowingshopController());
+
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('ຢືນຢັນການ Block'),
+        content: const SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການ Block ຮ້ານແກ່ລົດນີ້?'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('ຍົກເລີກ'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+          TextButton(
+            child: const Text('Block'),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await deleteTowingshopController.UpdatePermission(towingshopId);
             },
           ),
         ],

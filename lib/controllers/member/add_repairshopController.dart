@@ -54,7 +54,7 @@ class Repairshop {
       String imageUrl = await ref.getDownloadURL();
       return imageUrl;
     } catch (e) {
-      print('Error uploading image to Firebase Storage: $e');
+      // print('Error uploading image to Firebase Storage: $e');
       return null;
     }
   }
@@ -75,7 +75,7 @@ class Repairshop {
       String imageUrl = await ref.getDownloadURL();
       return imageUrl;
     } catch (e) {
-      print('Error uploading document image to Firebase Storage: $e');
+      // print('Error uploading document image to Firebase Storage: $e');
       return null;
     }
   }
@@ -124,30 +124,25 @@ class RepairshopRegisterController extends GetxController {
         if (response.statusCode == 200 || response.statusCode == 201) {
           // Registration successful
           isSuccess.value = true;
-          print('sucessfully');
-          // Navigate to success page or perform other actions
+          // print('sucessfully');
         } else {
           // Registration failed
           isSuccess.value = false;
-          print("Error: ${response.statusCode}");
+          // print("Error: ${response.statusCode}");
           if (response.statusCode == 400) {
             // Handle validation errors
-            print('Validation error: ${response.body}');
-            // Display validation errors to the user or perform other actions
+            // print('Validation error: ${response.body}');
           } else {
-            // Handle other errors (e.g., server errors)
-            print('Server error');
-            // Display a generic error message to the user or perform other actions
+            // print('Server error');
           }
         }
       } else {
-        print('Error: Image upload failed');
+        // print('Error: Image upload failed');
         isSuccess.value = false;
       }
     } catch (error) {
-      // Handle network errors or exceptions
       isSuccess.value = false;
-      print("Error: $error");
+      // print("Error: $error");
     } finally {
       isLoading.value = false;
     }

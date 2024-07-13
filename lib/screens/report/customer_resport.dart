@@ -314,6 +314,15 @@ class _CustomerReportState extends State<CustomerReport> {
                   filterTexts: _filterTexts,
                   columns: [
                     WebDataColumn(
+                      name: 'profile_image',
+                      label: const Text('ຮູບ profile'),
+                      dataCell: (value) => DataCell(
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(value.toString()),
+                        ),
+                      ),
+                    ),
+                    WebDataColumn(
                       name: 'id',
                       label: const Text('ID'),
                       dataCell: (value) => DataCell(Text('$value')),
@@ -366,11 +375,6 @@ class _CustomerReportState extends State<CustomerReport> {
                     WebDataColumn(
                       name: 'province',
                       label: const Text('ແຂວງ'),
-                      dataCell: (value) => DataCell(Text('$value')),
-                    ),
-                    WebDataColumn(
-                      name: 'profile_image',
-                      label: const Text('ຮູບ profile'),
                       dataCell: (value) => DataCell(Text('$value')),
                     ),
                     WebDataColumn(

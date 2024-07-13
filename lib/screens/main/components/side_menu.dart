@@ -1,7 +1,9 @@
 import 'package:admin/constants.dart';
 import 'package:admin/controllers/MenuAppController.dart';
+import 'package:admin/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({
@@ -157,7 +159,8 @@ class SideMenu extends StatelessWidget {
                   style: TextStyle(fontSize: 14),
                 ),
                 onTap: () {
-                  // Handle Towing Shop Report menu item press
+                  MenuAppController.instance
+                      .changeSelectedItem(MenuItems.shopCannelRequest);
                 },
               ),
             ],
@@ -197,6 +200,13 @@ class SideMenu extends StatelessWidget {
             title: "ການຕັ້ງຄ່າ",
             svgSrc: "assets/icons/menu_setting.svg",
             press: () {},
+          ),
+          DrawerListTile(
+            title: "ອອກຈາກລະບົບ",
+            svgSrc: "assets/icons/menu_setting.svg",
+            press: () {
+              Get.offAll(() => const LoginScreen());
+            },
           ),
         ],
       ),

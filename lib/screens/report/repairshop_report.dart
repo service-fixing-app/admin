@@ -230,33 +230,33 @@ class _RepairshopReportState extends State<RepairshopReport> {
                     header: const Text('ລາຍງານຈຳນວນຮ້ານສ້ອມແປງລົດ'),
                     actions: [
                       if (_selectedRowKeys.isNotEmpty)
-                        // SizedBox(
-                        //   height: 50,
-                        //   width: 100,
-                        //   child: ElevatedButton(
-                        //     style: ElevatedButton.styleFrom(
-                        //       backgroundColor: Colors.red,
-                        //     ),
-                        //     onPressed: _selectedRowKeys.isNotEmpty
-                        //         ? () {
-                        //             _showDeleteConfirmationDialog(context, () {
-                        //               deleteRepairshopController
-                        //                   .deleteRepairshop(_selectedRowKeys);
-                        //               //print('Delete! $_selectedRowKeys');
-                        //               setState(() {
-                        //                 _selectedRowKeys.clear();
-                        //               });
-                        //             });
-                        //           }
-                        //         : null,
-                        //     child: const Text(
-                        //       'Delete',
-                        //       style: TextStyle(
-                        //         color: Colors.white,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
+                        SizedBox(
+                          height: 50,
+                          width: 100,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            onPressed: _selectedRowKeys.isNotEmpty
+                                ? () {
+                                    _showDeleteConfirmationDialog(context, () {
+                                      deleteRepairshopController
+                                          .deleteRepairshop(_selectedRowKeys);
+                                      //print('Delete! $_selectedRowKeys');
+                                      setState(() {
+                                        _selectedRowKeys.clear();
+                                      });
+                                    });
+                                  }
+                                : null,
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
                       Container(
                         child: Row(
                           children: [
@@ -337,6 +337,15 @@ class _RepairshopReportState extends State<RepairshopReport> {
                       filterTexts: _filterTexts,
                       columns: [
                         WebDataColumn(
+                          name: 'profile_image',
+                          label: const Text('ຮູບ profile'),
+                          dataCell: (value) => DataCell(
+                            CircleAvatar(
+                              backgroundImage: NetworkImage(value.toString()),
+                            ),
+                          ),
+                        ),
+                        WebDataColumn(
                           name: 'id',
                           label: const Text('ID'),
                           dataCell: (value) => DataCell(Text('$value')),
@@ -397,16 +406,6 @@ class _RepairshopReportState extends State<RepairshopReport> {
                           dataCell: (value) => DataCell(Text('$value')),
                         ),
                         WebDataColumn(
-                          name: 'profile_image',
-                          label: const Text('ຮູບ profile'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
-                          name: 'document_verify',
-                          label: const Text('ຮູບເອກະສານຢືນຢັນຕົວຕົນ'),
-                          dataCell: (value) => DataCell(Text('$value')),
-                        ),
-                        WebDataColumn(
                           name: 'role',
                           label: const Text('role'),
                           dataCell: (value) => DataCell(Text('$value')),
@@ -420,6 +419,26 @@ class _RepairshopReportState extends State<RepairshopReport> {
                           name: 'updatedAt',
                           label: const Text('updateAt'),
                           dataCell: (value) => DataCell(Text('$value')),
+                        ),
+                        WebDataColumn(
+                          name: 'document_verify',
+                          label: const Text('ຮູບເອກະສານຢືນຢັນຕົວຕົນ'),
+                          dataCell: (value) => DataCell(
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  value.toString(),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                       rows: filteredRows,

@@ -23,17 +23,14 @@ class RepairshopNotificationController extends GetxController {
         repairshopData.value = allRepairshopData
             .where((shop) => shop['permission_status'] == "false")
             .toList();
-
-        print('Successfully fetched and filtered repair data $repairshopData');
-
-        print('Successfully fetched repair data $repairshopData');
+        // print('Successfully fetched repair data $repairshopData');
       } else {
         // Error handling
-        print("Failed to fetch repair data: ${response.statusCode}");
+        // print("Failed to fetch repair data: ${response.statusCode}");
       }
     } catch (e) {
       // Error handling
-      print("Error fetching repair data: $e");
+      // print("Error fetching repair data: $e");
     }
   }
 
@@ -68,10 +65,10 @@ class RepairshopNotificationController extends GetxController {
         );
         Get.find<RepairshopNotificationController>().fetchRepairshopData();
       } else {
-        print("Response body: ${response.body}");
+        // print("Response body: ${response.body}");
       }
     } catch (error) {
-      print("Error: $error");
+      // print("Error: $error");
     }
   }
 }

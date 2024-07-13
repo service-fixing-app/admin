@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class GetRequestRepairController extends GetxController {
+class GetRequestTowingshopController extends GetxController {
   var requestRepairData = <Map<String, dynamic>>[].obs;
 
   @override
@@ -14,7 +14,7 @@ class GetRequestRepairController extends GetxController {
   Future<void> fetchRequestRepairData() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/request/getallRequestMessage'),
+        Uri.parse('http://localhost:5000/api/request/getTowingshopRequestion'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);

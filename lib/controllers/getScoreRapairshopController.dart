@@ -27,7 +27,7 @@ class GetScoreRepairshopController extends GetxController {
           var repairshop = review['repairshop'];
           if (repairshop != null && repairshop['id'] != null) {
             String shopId = repairshop['id'];
-            String shopName = repairshop['shop_name'];
+            // String shopName = repairshop['shop_name'];
             int rating = review['rating'];
 
             if (!shopRatings.containsKey(shopId)) {
